@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -176,27 +177,31 @@ export default function CallWorkspace() {
         </Link>
       </nav>
       <section className="call-main">
-        <p className="eyebrow">MARKET ENTRY SESSION</p>
-        <div className="caller" aria-label={statusCopy[status]}>
-          <div>M</div>
-        </div>
-        <h1 className="caller-name">Maya</h1>
-        <p className="caller-role">Australian Market-Entry Advisor</p>
-        <p className="call-status" aria-live="polite">
-          <span /> {statusCopy[status]}
-          {status !== 'ready' && status !== 'error' && <span className="call-timer">{time}</span>}
-        </p>
-        {transcript.length > 0 && (
-          <div className="live-transcript" aria-live="polite">
-            {transcript.slice(-2).map((line, index) => (
-              <p key={`${line.speaker}-${index}`}>
-                <b>{line.speaker}</b>
-                {line.text}
-              </p>
-            ))}
+        <div className="call-top">
+          <p className="eyebrow">MARKET ENTRY SESSION</p>
+          <div className="caller" aria-label={statusCopy[status]}>
+            <Image src="/maya/maya-avatar.png" alt="Maya" fill sizes="176px" priority />
           </div>
-        )}
-        {error && <p className="call-error">{error}</p>}
+          <h1 className="caller-name">Maya</h1>
+          <p className="caller-role">Australian Market-Entry Advisor</p>
+        </div>
+        <div className="call-mid">
+          <p className="call-status" aria-live="polite">
+            <span /> {statusCopy[status]}
+            {status !== 'ready' && status !== 'error' && <span className="call-timer">{time}</span>}
+          </p>
+          {transcript.length > 0 && (
+            <div className="live-transcript" aria-live="polite">
+              {transcript.slice(-2).map((line, index) => (
+                <p key={`${line.speaker}-${index}`}>
+                  <b>{line.speaker}</b>
+                  {line.text}
+                </p>
+              ))}
+            </div>
+          )}
+          {error && <p className="call-error">{error}</p>}
+        </div>
         <div className="call-controls">
           {status === 'ready' || status === 'error' ? (
             <div className="control-group">
