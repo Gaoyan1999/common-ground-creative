@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ChangeEvent, useState } from 'react';
 import type { MarketAnalysis } from '@common-ground/shared';
 
-type Stage = 'upload' | 'signal' | 'summary' | 'report';
+type Stage = 'upload' | 'signal' | 'summary';
 type BriefContext = {
   brand: string;
   role: string;
@@ -47,6 +47,82 @@ function AnalysisIcon() {
   );
 }
 
+function DemoMarketReport() {
+  return (
+    <article className="market-report" aria-label="Demo Australian market-entry report">
+      <section className="report-page report-page--cover">
+        <header className="report-header">
+          <span className="report-brand">COMMON<br />GROUND<br />CREATIVE</span>
+          <span>AUSTRALIAN MARKET ENTRY REPORT</span>
+          <b>DEMO</b>
+        </header>
+        <div className="report-cover-copy">
+          <p>SYDNEY / AUSTRALIA / SEPTEMBER 2026</p>
+          <h3>Solace Skin<br /><em>market-entry readout.</em></h3>
+          <p className="report-lead">
+            A focused 90-day launch plan for a science-led skincare brand entering Australia.
+            All figures and brand references in this demo are illustrative.
+          </p>
+        </div>
+        <div className="report-kpis">
+          <div><span>PRIMARY AUDIENCE</span><b>26-39</b><small>urban skin-health buyers</small></div>
+          <div><span>OPENING MARKET</span><b>Sydney</b><small>inner east + north shore</small></div>
+          <div><span>TEST WINDOW</span><b>90 days</b><small>validate before scale</small></div>
+        </div>
+        <footer>Prepared for demo purposes · Common Ground Creative</footer>
+      </section>
+
+      <section className="report-page">
+        <header className="report-header">
+          <span className="report-brand">COMMON<br />GROUND<br />CREATIVE</span>
+          <span>01 / OPPORTUNITY &amp; AUDIENCE</span>
+          <b>01</b>
+        </header>
+        <div className="report-section-heading">
+          <p>EXECUTIVE SUMMARY</p>
+          <h3>Win trust before<br /><em>you chase reach.</em></h3>
+          <p>
+            The strongest opening is a premium, proof-led routine for Australian consumers who
+            are already buying active skincare but want fewer, clearer choices. Do not launch as
+            another ingredient story. Launch as the calm, credible reset after over-complicated routines.
+          </p>
+        </div>
+        <div className="report-insight-grid">
+          <article><span>01 / POSITIONING</span><h4>Clinical clarity, not clinical theatre.</h4><p>Make the product benefit understandable in five seconds: what it helps, who it is for, and what proof supports it.</p></article>
+          <article><span>02 / CUSTOMER</span><h4>Skincare-literate, time-poor urban professionals.</h4><p>They compare formulas, creator reviews and price-per-use before they buy. Familiarity and evidence reduce the perceived risk of a new brand.</p></article>
+          <article><span>03 / COMMERCIAL SIGNAL</span><h4>A$58-A$72 is a credible hero-product test.</h4><p>This price band supports premium cues while leaving room for introductory bundles and efficient creator seeding.</p></article>
+        </div>
+        <div className="report-callout"><span>RECOMMENDATION</span><p>Start with one hero serum and one simple routine bundle. The job of the first 90 days is to prove message-market fit, not maximise range.</p></div>
+        <footer>Solace Skin demo report · Page 2 of 3</footer>
+      </section>
+
+      <section className="report-page">
+        <header className="report-header">
+          <span className="report-brand">COMMON<br />GROUND<br />CREATIVE</span>
+          <span>02 / GO-TO-MARKET PLAN</span>
+          <b>02</b>
+        </header>
+        <div className="report-section-heading report-section-heading--compact">
+          <p>CHANNEL &amp; ACTIVATION</p>
+          <h3>Build proof in public,<br /><em>then buy scale.</em></h3>
+        </div>
+        <div className="report-table" role="table" aria-label="90-day launch plan">
+          <div className="report-table-row report-table-head" role="row"><span>PHASE</span><span>FOCUS</span><span>SUCCESS SIGNAL</span></div>
+          <div className="report-table-row" role="row"><span>Days 1-30</span><span>Creator seeding and landing-page message tests across Sydney.</span><span>30 pieces of usable proof; 3+ creator angles worth scaling.</span></div>
+          <div className="report-table-row" role="row"><span>Days 31-60</span><span>Meta conversion test with founder and creator-led education.</span><span>Landing-page conversion above 2.2%; repeatable A$35-45 acquisition range.</span></div>
+          <div className="report-table-row" role="row"><span>Days 61-90</span><span>Retargeting, bundles and a selective retail conversation.</span><span>25% of sales from returning visitors; a clear wholesale readiness case.</span></div>
+        </div>
+        <div className="report-bottom-grid">
+          <div><span>CHANNEL PRIORITY</span><ol><li>Creator proof and paid social</li><li>Owned education and email</li><li>Selective retail outreach</li></ol></div>
+          <div><span>WATCHOUTS</span><p>Keep claims substantiated and localise sun, climate and routine language. Avoid broad “clinically proven” claims unless product-specific evidence is ready.</p></div>
+        </div>
+        <div className="report-callout"><span>NEXT DECISION</span><p>Approve the hero-product offer, creator cohort and 90-day test budget before commissioning a full launch plan.</p></div>
+        <footer>Solace Skin demo report · Page 3 of 3</footer>
+      </section>
+    </article>
+  );
+}
+
 export default function AgentWorkspace({ initialStage }: { initialStage: 'upload' | 'summary' }) {
   const [stage, setStage] = useState<Stage>(initialStage);
   const [fileName, setFileName] = useState('');
@@ -62,7 +138,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
     monthlyRevenue: '',
     goals: '',
   });
-  const progress = stage === 'upload' ? 1 : stage === 'signal' ? 2 : stage === 'summary' ? 3 : 4;
+  const progress = stage === 'upload' ? 1 : stage === 'signal' ? 2 : 4;
   function selectFile(event: ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
@@ -126,11 +202,11 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
         <aside className="agent-aside">
           <p className="eyebrow">AU MARKET ENTRY / 0{progress}</p>
           <h1>
-            {stage === 'summary' || stage === 'report' ? (
+            {stage === 'summary' ? (
               <>
-                Your local
+                Your market-entry
                 <br />
-                <em>story, clarified.</em>
+                <em>readout.</em>
               </>
             ) : (
               <>
@@ -141,8 +217,8 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
             )}
           </h1>
           <p>
-            {stage === 'summary' || stage === 'report'
-              ? 'Your company context and discussion with Maya are now one clear market-entry narrative.'
+            {stage === 'summary'
+              ? 'Your company context and discussion with Maya are now organised into a concise launch brief.'
               : 'Share whatever company context you have. We&apos;ll use it to create a first local read before your market-entry conversation.'}
           </p>
           <div className="mini-process">
@@ -152,7 +228,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
             <div className={progress === 2 ? 'is-current' : ''}>
               <strong>2</strong> Market signal
             </div>
-            <div className={progress === 3 ? 'is-current' : ''}>
+            <div>
               <strong>3</strong> Expert call
             </div>
             <div className={progress === 4 ? 'is-current' : ''}>
@@ -333,71 +409,6 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
             )}
             {stage === 'summary' && (
               <div className="summary-workspace">
-                <p className="message-label">STEP 03 / CALL SUMMARY</p>
-                <h2>
-                  Your call, turned into
-                  <br />
-                  <em>clear next moves.</em>
-                </h2>
-                <p className="summary-intro">
-                  You and Maya explored how your barrier-care proposition can translate for
-                  Australian buyers: lead with clinical proof, launch around one hero product, and
-                  validate the message with creators before scaling paid media.
-                </p>
-                <article className="summary-card">
-                  <div className="summary-card-head">
-                    <span>AI CALL SYNTHESIS</span>
-                    <b>CONTEXT COMPLETE</b>
-                  </div>
-                  <div className="summary-point">
-                    <span>01</span>
-                    <div>
-                      <h3>Positioning to lead with</h3>
-                      <p>
-                        Barrier-care efficacy that feels simple enough for everyday Australian
-                        routines — grounded in clinical proof, not skincare jargon.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="summary-point">
-                    <span>02</span>
-                    <div>
-                      <h3>Launch focus</h3>
-                      <p>
-                        Open with one hero product and creator-led education. Keep the first market
-                        test focused before widening the range.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="summary-point">
-                    <span>03</span>
-                    <div>
-                      <h3>First channel mix</h3>
-                      <p>
-                        Use Meta for high-intent learning, supported by selective creator seeding to
-                        build the local proof your audience needs.
-                      </p>
-                    </div>
-                  </div>
-                </article>
-                <div className="summary-actions">
-                  <Link className="continue-call" href="/call">
-                    <PhoneIcon /> Continue conversation
-                  </Link>
-                  <button
-                    className="analyse-button generate-report"
-                    onClick={() => setStage('report')}
-                  >
-                    <AnalysisIcon /> Preview business analysis
-                  </button>
-                </div>
-                <p className="upload-note">
-                  You can keep refining the conversation before generating a final PDF report.
-                </p>
-              </div>
-            )}
-            {stage === 'report' && (
-              <div className="summary-workspace">
                 <p className="message-label">STEP 04 / REPORT READY</p>
                 <h2>
                   Your market-entry
@@ -405,31 +416,21 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                   <em>report is ready.</em>
                 </h2>
                 <p className="summary-intro">
-                  A concise starting point for your team and a useful brief for the marketing
-                  specialist who will review your launch.
+                  A concise, decision-ready starting point for your team and the marketing
+                  specialist who will shape your Australian launch.
                 </p>
-                <article className="agent-report-preview">
-                  <div className="report-side">
-                    COMMON
-                    <br />
-                    GROUND
-                    <br />
-                    CREATIVE
-                  </div>
-                  <div>
-                    <span>AUSTRALIAN MARKET ENTRY REPORT</span>
-                    <h3>
-                      Barrier care,
-                      <br />
-                      made local.
-                    </h3>
-                    <p>Company context · Market signal · Call summary</p>
-                  </div>
-                  <b>PDF</b>
-                </article>
-                <button className="analyse-button generate-report" onClick={() => window.print()}>
-                  Download PDF report <span>↓</span>
-                </button>
+                <DemoMarketReport />
+                <div className="summary-actions">
+                  <Link className="continue-call" href="/call">
+                    <PhoneIcon /> Continue conversation
+                  </Link>
+                  <a className="analyse-button generate-report" href="/reports/solace-skin-au-market-entry-demo.pdf" download>
+                    <AnalysisIcon /> Download PDF report
+                  </a>
+                </div>
+                <p className="upload-note">
+                  Demo report: all data and brand references are illustrative. A live version will use the submitted brief and Maya call notes.
+                </p>
               </div>
             )}
           </div>
