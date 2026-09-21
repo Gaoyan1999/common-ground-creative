@@ -26,6 +26,7 @@
 .call-main {
   display: flex;
   width: min(100%, 50rem);
+  align-self: center;
   flex: 1;
   flex-direction: column;
   align-items: center;
