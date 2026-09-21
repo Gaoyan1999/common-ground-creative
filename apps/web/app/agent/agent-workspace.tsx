@@ -75,7 +75,6 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
     setBriefContext((current) => ({ ...current, [field]: value }));
   }
   async function analyseDocument() {
-    if (!file) return;
     setIsAnalysing(true);
     setAnalysisError('');
     try {
@@ -91,7 +90,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
         .filter(Boolean)
         .join('\n');
       if (context) body.append('briefContext', context);
-      body.append('document', file);
+      if (file) body.append('document', file);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/brief/analyse`,
         { method: 'POST', body },
@@ -144,11 +143,11 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
           <p>
             {stage === 'summary' || stage === 'report'
               ? 'Your company context and discussion with Maya are now one clear market-entry narrative.'
-              : 'Share the company document you already have. We&apos;ll use it to create a first local read before your market-entry conversation.'}
+              : 'Share whatever company context you have. We&apos;ll use it to create a first local read before your market-entry conversation.'}
           </p>
           <div className="mini-process">
             <div className={progress === 1 ? 'is-current' : ''}>
-              <strong>1</strong> Company document
+              <strong>1</strong> Company context
             </div>
             <div className={progress === 2 ? 'is-current' : ''}>
               <strong>2</strong> Market signal
@@ -167,67 +166,113 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
               <div className="upload-stage">
                 <p className="message-label">STEP 01 / COMPANY CONTEXT</p>
                 <h2>
-                  Upload your company
+                  Share your company
                   <br />
-                  <em>overview.</em>
+                  <em>context.</em>
                 </h2>
                 <p>
-                  A company deck, product brief or existing market plan is enough. PDF only for this
-                  MVP.
+                  Add as much or as little as you have. A company deck, product brief or existing
+                  market plan can help, but is not required.
                 </p>
-                <details className="brief-submission">
-                  <summary>Make your brief more specific <span>Optional</span></summary>
+                <section className="brief-submission" aria-labelledby="brief-submission-title">
+                  <div className="brief-submission-heading">
+                    <div>
+                      <p>COMPANY CONTEXT</p>
+                      <h3 id="brief-submission-title">Tell us what you can</h3>
+                    </div>
+                    <span>All optional</span>
+                  </div>
                   <div className="brief-form">
                     <label>
                       Company or brand name
-                      <input value={briefContext.brand} onChange={(event) => updateBriefContext('brand', event.target.value)} placeholder="Your brand or business" />
+                      <input
+                        value={briefContext.brand}
+                        onChange={(event) => updateBriefContext('brand', event.target.value)}
+                        placeholder="Your brand or business"
+                      />
                     </label>
                     <label>
                       Your role
-                      <input value={briefContext.role} onChange={(event) => updateBriefContext('role', event.target.value)} placeholder="Founder, Head of Growth…" />
+                      <input
+                        value={briefContext.role}
+                        onChange={(event) => updateBriefContext('role', event.target.value)}
+                        placeholder="Founder, Head of Growth…"
+                      />
                     </label>
                     <label>
                       Website URL
-                      <input type="url" value={briefContext.website} onChange={(event) => updateBriefContext('website', event.target.value)} placeholder="https://yoursite.com" />
+                      <input
+                        type="url"
+                        value={briefContext.website}
+                        onChange={(event) => updateBriefContext('website', event.target.value)}
+                        placeholder="https://yoursite.com"
+                      />
                     </label>
                     <div className="brief-form-grid">
                       <label>
                         Business type
-                        <select value={briefContext.businessType} onChange={(event) => updateBriefContext('businessType', event.target.value)}>
-                          <option value="">Select one</option><option>DTC / Ecommerce</option><option>Marketplace brand</option><option>Retail brand</option><option>Service business</option><option>Other</option>
+                        <select
+                          value={briefContext.businessType}
+                          onChange={(event) =>
+                            updateBriefContext('businessType', event.target.value)
+                          }
+                        >
+                          <option value="">Select one</option>
+                          <option>DTC / Ecommerce</option>
+                          <option>Marketplace brand</option>
+                          <option>Retail brand</option>
+                          <option>Service business</option>
+                          <option>Other</option>
                         </select>
                       </label>
                       <label>
                         Monthly revenue
-                        <select value={briefContext.monthlyRevenue} onChange={(event) => updateBriefContext('monthlyRevenue', event.target.value)}>
-                          <option value="">Select a range</option><option>Pre-revenue</option><option>Under A$25k</option><option>A$25k–A$100k</option><option>A$100k–A$500k</option><option>Over A$500k</option>
+                        <select
+                          value={briefContext.monthlyRevenue}
+                          onChange={(event) =>
+                            updateBriefContext('monthlyRevenue', event.target.value)
+                          }
+                        >
+                          <option value="">Select a range</option>
+                          <option>Pre-revenue</option>
+                          <option>Under A$25k</option>
+                          <option>A$25k–A$100k</option>
+                          <option>A$100k–A$500k</option>
+                          <option>Over A$500k</option>
                         </select>
                       </label>
                     </div>
                     <label>
                       What are you looking to achieve?
-                      <textarea rows={4} value={briefContext.goals} onChange={(event) => updateBriefContext('goals', event.target.value)} placeholder="Tell us about your goals, challenges, or what you want to validate in Australia." />
+                      <textarea
+                        rows={4}
+                        value={briefContext.goals}
+                        onChange={(event) => updateBriefContext('goals', event.target.value)}
+                        placeholder="Tell us about your goals, challenges, or what you want to validate in Australia."
+                      />
                     </label>
                   </div>
-                </details>
-                <label className={`upload-box ${fileName ? 'has-file' : ''}`}>
-                  <input type="file" accept="application/pdf,.pdf" onChange={selectFile} />
-                  <span className="upload-icon">↥</span>
-                  <span>
-                    <b>{fileName || 'Drop a PDF here, or browse'}</b>
-                    <small>
-                      {fileName
-                        ? 'Ready for analysis'
-                        : 'Company deck · Product brief · Brand presentation'}
-                    </small>
-                  </span>
-                  {fileName && <i>PDF</i>}
-                </label>
-                <button
-                  className="analyse-button"
-                  disabled={!file || isAnalysing}
-                  onClick={analyseDocument}
-                >
+                  <div className="brief-upload">
+                    <div className="brief-upload-label">
+                      <span>REFERENCE DOCUMENT</span>
+                      <small>Optional · PDF only</small>
+                    </div>
+                    <label className={`upload-box ${fileName ? 'has-file' : ''}`}>
+                      <input type="file" accept="application/pdf,.pdf" onChange={selectFile} />
+                      <span className="upload-icon">↥</span>
+                      <span>
+                        <b>{fileName || 'Drop a PDF here, or browse'}</b>
+                        <small>
+                          {fileName
+                            ? 'Ready for analysis'
+                            : 'Company deck · Product brief · Brand presentation'}
+                        </small>
+                      </span>
+                      {fileName && <i>PDF</i>}
+                    </label>
+                  </div>
+                </section>
+                <button className="analyse-button" disabled={isAnalysing} onClick={analyseDocument}>
                   {isAnalysing ? 'Analysing company context…' : 'Analyse company context'}{' '}
                   <span>↗</span>
                 </button>

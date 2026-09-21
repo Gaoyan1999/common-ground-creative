@@ -32,9 +32,12 @@ const maxDocumentCharacters = 30_000;
 const mockMarketAnalysis = marketAnalysisSchema.parse({
   summary:
     'A considered consumer brand with a clear product story and a credible starting point for an Australian market-entry conversation.',
-  productFit: 'Well suited to a digitally led Australian launch, subject to local pricing and category validation.',
-  primaryAudience: 'Design-conscious Australian consumers seeking differentiated, purpose-led products.',
-  openingChannel: 'Begin with a focused DTC launch supported by creator partnerships and targeted paid social.',
+  productFit:
+    'Well suited to a digitally led Australian launch, subject to local pricing and category validation.',
+  primaryAudience:
+    'Design-conscious Australian consumers seeking differentiated, purpose-led products.',
+  openingChannel:
+    'Begin with a focused DTC launch supported by creator partnerships and targeted paid social.',
   marketOpportunity:
     'Australia offers a useful test market for a focused launch: consumers are comfortable discovering emerging brands online, while a clear local proposition can build trust before broader retail expansion.',
 });
@@ -86,7 +89,8 @@ app.post('/realtime/offer', async (request, reply) => {
   if (!upstream.ok) {
     request.log.warn({ statusCode: upstream.status }, 'Qwen Realtime offer failed');
     return reply.code(upstream.status).send({
-      message: 'Qwen Realtime could not start the call. Confirm the Realtime model is enabled for this workspace.',
+      message:
+        'Qwen Realtime could not start the call. Confirm the Realtime model is enabled for this workspace.',
     });
   }
 
@@ -95,46 +99,48 @@ app.post('/realtime/offer', async (request, reply) => {
 
 app.post('/brief/analyse', async (request, reply) => {
   if (!request.isMultipart()) {
-    return reply.code(400).send({ message: 'Please upload a PDF company document.' });
+    return reply
+      .code(400)
+      .send({ message: 'Please provide company context as a PDF or form details.' });
   }
 
-  const upload = await request.file();
+  let document: Buffer | null = null;
+  let additionalContext = '';
 
-  if (!upload) {
-    return reply.code(400).send({ message: 'Please upload a PDF company document.' });
+  for await (const part of request.parts()) {
+    if (part.type === 'file') {
+      if (part.mimetype !== 'application/pdf') {
+        return reply.code(400).send({ message: 'Only PDF documents are supported.' });
+      }
+      document = await part.toBuffer();
+      continue;
+    }
+
+    if (part.fieldname === 'briefContext' && typeof part.value === 'string') {
+      additionalContext = part.value;
+    }
   }
 
-  if (upload.mimetype !== 'application/pdf') {
-    return reply.code(400).send({ message: 'Only PDF documents are supported.' });
+  let documentText = '';
+  if (document) {
+    if (!document.subarray(0, 5).toString().startsWith('%PDF-')) {
+      return reply.code(400).send({ message: 'The uploaded file is not a valid PDF.' });
+    }
+
+    const parser = new PDFParse({ data: document });
+    try {
+      documentText = (await parser.getText()).text.trim();
+    } finally {
+      await parser.destroy();
+    }
+
+    if (!documentText) {
+      return reply.code(422).send({
+        message: 'This PDF has no readable text. Please upload a text-based company document.',
+      });
+    }
   }
 
-  const document = await upload.toBuffer();
-  if (!document.subarray(0, 5).toString().startsWith('%PDF-')) {
-    return reply.code(400).send({ message: 'The uploaded file is not a valid PDF.' });
-  }
-
-  const parser = new PDFParse({ data: document });
-  let documentText: string;
-  try {
-    documentText = (await parser.getText()).text.trim();
-  } finally {
-    await parser.destroy();
-  }
-
-  if (!documentText) {
-    return reply.code(422).send({
-      message: 'This PDF has no readable text. Please upload a text-based company document.',
-    });
-  }
-
-  const briefContext = upload.fields.briefContext;
-  const additionalContext =
-    briefContext &&
-    !Array.isArray(briefContext) &&
-    'value' in briefContext &&
-    typeof briefContext.value === 'string'
-      ? briefContext.value
-      : '';
   const analysis = await analyseCompanyDocument(
     documentText.slice(0, maxDocumentCharacters),
     additionalContext.slice(0, 4_000),
@@ -173,7 +179,7 @@ async function analyseCompanyDocument(documentText: string, additionalContext = 
         },
         {
           role: 'user',
-          content: `Company document:\n\n${documentText}${additionalContext ? `\n\nAdditional brief context:\n${additionalContext}` : ''}`,
+          content: `${documentText ? `Company document:\n\n${documentText}` : 'No company document was provided.'}${additionalContext ? `\n\nAdditional brief context:\n${additionalContext}` : ''}`,
         },
       ],
     }),
