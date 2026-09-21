@@ -5,6 +5,14 @@ import { ChangeEvent, useState } from 'react';
 import type { MarketAnalysis } from '@common-ground/shared';
 
 type Stage = 'upload' | 'signal' | 'summary' | 'report';
+type BriefContext = {
+  brand: string;
+  role: string;
+  website: string;
+  businessType: string;
+  monthlyRevenue: string;
+  goals: string;
+};
 
 function PhoneIcon() {
   return (
@@ -46,6 +54,14 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
   const [isAnalysing, setIsAnalysing] = useState(false);
   const [analysis, setAnalysis] = useState<MarketAnalysis | null>(null);
   const [analysisError, setAnalysisError] = useState('');
+  const [briefContext, setBriefContext] = useState<BriefContext>({
+    brand: '',
+    role: '',
+    website: '',
+    businessType: '',
+    monthlyRevenue: '',
+    goals: '',
+  });
   const progress = stage === 'upload' ? 1 : stage === 'signal' ? 2 : stage === 'summary' ? 3 : 4;
   function selectFile(event: ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.target.files?.[0];
@@ -55,12 +71,26 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
       setAnalysisError('');
     }
   }
+  function updateBriefContext(field: keyof BriefContext, value: string) {
+    setBriefContext((current) => ({ ...current, [field]: value }));
+  }
   async function analyseDocument() {
     if (!file) return;
     setIsAnalysing(true);
     setAnalysisError('');
     try {
       const body = new FormData();
+      const context = [
+        briefContext.brand && `Brand: ${briefContext.brand}`,
+        briefContext.role && `Role: ${briefContext.role}`,
+        briefContext.website && `Website: ${briefContext.website}`,
+        briefContext.businessType && `Business type: ${briefContext.businessType}`,
+        briefContext.monthlyRevenue && `Monthly revenue: ${briefContext.monthlyRevenue}`,
+        briefContext.goals && `Goals: ${briefContext.goals}`,
+      ]
+        .filter(Boolean)
+        .join('\n');
+      if (context) body.append('briefContext', context);
       body.append('document', file);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/brief/analyse`,
@@ -145,6 +175,41 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                   A company deck, product brief or existing market plan is enough. PDF only for this
                   MVP.
                 </p>
+                <details className="brief-submission">
+                  <summary>Make your brief more specific <span>Optional</span></summary>
+                  <div className="brief-form">
+                    <label>
+                      Company or brand name
+                      <input value={briefContext.brand} onChange={(event) => updateBriefContext('brand', event.target.value)} placeholder="Your brand or business" />
+                    </label>
+                    <label>
+                      Your role
+                      <input value={briefContext.role} onChange={(event) => updateBriefContext('role', event.target.value)} placeholder="Founder, Head of Growth…" />
+                    </label>
+                    <label>
+                      Website URL
+                      <input type="url" value={briefContext.website} onChange={(event) => updateBriefContext('website', event.target.value)} placeholder="https://yoursite.com" />
+                    </label>
+                    <div className="brief-form-grid">
+                      <label>
+                        Business type
+                        <select value={briefContext.businessType} onChange={(event) => updateBriefContext('businessType', event.target.value)}>
+                          <option value="">Select one</option><option>DTC / Ecommerce</option><option>Marketplace brand</option><option>Retail brand</option><option>Service business</option><option>Other</option>
+                        </select>
+                      </label>
+                      <label>
+                        Monthly revenue
+                        <select value={briefContext.monthlyRevenue} onChange={(event) => updateBriefContext('monthlyRevenue', event.target.value)}>
+                          <option value="">Select a range</option><option>Pre-revenue</option><option>Under A$25k</option><option>A$25k–A$100k</option><option>A$100k–A$500k</option><option>Over A$500k</option>
+                        </select>
+                      </label>
+                    </div>
+                    <label>
+                      What are you looking to achieve?
+                      <textarea rows={4} value={briefContext.goals} onChange={(event) => updateBriefContext('goals', event.target.value)} placeholder="Tell us about your goals, challenges, or what you want to validate in Australia." />
+                    </label>
+                  </div>
+                </details>
                 <label className={`upload-box ${fileName ? 'has-file' : ''}`}>
                   <input type="file" accept="application/pdf,.pdf" onChange={selectFile} />
                   <span className="upload-icon">↥</span>

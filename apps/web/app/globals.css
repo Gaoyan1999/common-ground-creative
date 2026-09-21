@@ -26,6 +26,14 @@ a { color:inherit; text-decoration:none; }
 .hero h1,.section-header h2,.center-header h2,.fit h2,.cta h2 { margin:clamp(2.4rem,5vw,4.5rem) 0 0; color:var(--ink); font-size:clamp(4rem,9vw,8.8rem); font-weight:800; line-height:.84; letter-spacing:-.09em; }
 h1 em,h2 em { font-family:inherit; font-style:normal; font-weight:inherit; letter-spacing:inherit; }
 .hero-bottom { display:flex; align-items:end; justify-content:space-between; gap:2rem; margin-top:auto; padding:4rem 0 2rem; border-bottom:1px solid var(--border); }
+.brief-submission { margin:1.5rem 0; border:1px solid var(--border); background:var(--surface); }
+.brief-submission summary { display:flex; justify-content:space-between; gap:1rem; padding:1rem 1.15rem; cursor:pointer; color:var(--ink); font-size:.82rem; font-weight:700; }
+.brief-submission summary span { color:var(--text-muted); font:500 .65rem var(--mono); }
+.brief-form { display:grid; gap:.9rem; padding:0 1.15rem 1.15rem; }
+.brief-form label { display:grid; gap:.4rem; color:var(--text); font-size:.72rem; font-weight:700; }
+.brief-form input,.brief-form select,.brief-form textarea { width:100%; padding:.72rem .8rem; border:1px solid var(--border); border-radius:0; background:var(--canvas); color:var(--ink); font:400 .84rem var(--sans); }
+.brief-form textarea { resize:vertical; }
+.brief-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
 .hero-bottom>p { max-width:29rem; margin:0; color:var(--text); font-size:1rem; line-height:1.55; }
 .hero-bottom>div { display:flex; align-items:center; gap:1.6rem; }
 .button { display:inline-flex; align-items:center; gap:1.7rem; padding:1rem 1.25rem; font-size:.78rem; font-weight:800; transition:background .2s,transform .2s; }
