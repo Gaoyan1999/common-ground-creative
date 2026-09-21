@@ -23,6 +23,9 @@ pnpm dev
 
 The web app runs at `http://localhost:3000`; the API runs at `http://localhost:3001`.
 
+For a deterministic demo, set `LLM_ENABLED=false` in `.env`. This returns mock data for
+the document-analysis endpoint only; it does not disable or change the realtime voice module.
+
 ## Commands
 
 ```bash
