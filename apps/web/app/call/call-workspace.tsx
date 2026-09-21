@@ -1,0 +1,225 @@
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import './call.css';
+
+type CallStatus = 'ready' | 'connecting' | 'listening' | 'thinking' | 'speaking' | 'error';
+
+type Transcript = {
+  speaker: 'Maya' | 'You';
+  text: string;
+};
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+
+const statusCopy: Record<CallStatus, string> = {
+  ready: 'Ready when you are',
+  connecting: 'Connecting to Maya',
+  listening: 'Maya is listening',
+  thinking: 'Maya is thinking',
+  speaking: 'Maya is speaking',
+  error: 'Connection needs attention',
+};
+
+const PhoneIcon = () => (
+  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+    <path d="M6.7 3.8 9.5 7l-1.8 2.7a14.7 14.7 0 0 0 6.6 6.6l2.7-1.8 3.2 2.8-1.2 2.5c-.5 1-1.6 1.4-2.6 1.1C8.9 18.8 5.2 15.1 3.1 7.6 2.8 6.6 3.2 5.5 4.2 5l2.5-1.2Z" />
+  </svg>
+);
+
+const EndCallIcon = () => (
+  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="m6 6 12 12M18 6 6 18" />
+  </svg>
+);
+
+export default function CallWorkspace() {
+  const router = useRouter();
+  const [status, setStatus] = useState<CallStatus>('ready');
+  const [error, setError] = useState('');
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [transcript, setTranscript] = useState<Transcript[]>([]);
+  const connectionRef = useRef<RTCPeerConnection | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const timerRef = useRef<number | null>(null);
+  const outputAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const stopCall = () => {
+    connectionRef.current?.close();
+    connectionRef.current = null;
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+    if (timerRef.current) window.clearInterval(timerRef.current);
+    timerRef.current = null;
+    if (outputAudioRef.current) outputAudioRef.current.srcObject = null;
+  };
+
+  useEffect(() => stopCall, []);
+
+  const appendMayaDelta = (delta: string) => {
+    if (!delta) return;
+    setTranscript((current) => {
+      const last = current.at(-1);
+      if (last?.speaker === 'Maya') {
+        return [...current.slice(0, -1), { ...last, text: `${last.text}${delta}` }];
+      }
+      return [...current, { speaker: 'Maya', text: delta }];
+    });
+  };
+
+  const handleRealtimeEvent = (event: Record<string, unknown>) => {
+    const type = String(event.type ?? '');
+    if (type.includes('speech_started')) setStatus('listening');
+    if (type.includes('speech_stopped')) setStatus('thinking');
+
+    if (type === 'response.audio_transcript.delta' || type === 'response.text.delta') {
+      setStatus('speaking');
+      appendMayaDelta(String(event.delta ?? ''));
+    }
+
+    if (type === 'conversation.item.input_audio_transcription.completed') {
+      const text = String(event.transcript ?? '').trim();
+      if (text) setTranscript((current) => [...current, { speaker: 'You', text }]);
+    }
+
+    if (type === 'response.done') setStatus('listening');
+  };
+
+  const startCall = async () => {
+    setError('');
+    setStatus('connecting');
+    setTranscript([]);
+    setElapsedSeconds(0);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
+      streamRef.current = stream;
+
+      const connection = new RTCPeerConnection();
+      connectionRef.current = connection;
+      stream.getTracks().forEach((track) => connection.addTrack(track, stream));
+
+      const events = connection.createDataChannel('oai-events');
+      events.onmessage = ({ data }) => {
+        try {
+          handleRealtimeEvent(JSON.parse(String(data)) as Record<string, unknown>);
+        } catch {
+          // Ignore non-JSON control packets.
+        }
+      };
+      events.onopen = () => {
+        events.send(
+          JSON.stringify({
+            type: 'session.update',
+            session: {
+              modalities: ['text', 'audio'],
+              instructions:
+                'You are Maya, a warm Australian market-entry advisor for Common Ground Creative. Speak natural English. Keep answers concise, ask one useful question at a time, and help overseas DTC brands understand Australian customers, channels and launch decisions.',
+              turn_detection: { type: 'semantic_vad' },
+            },
+          }),
+        );
+        setStatus('listening');
+        timerRef.current = window.setInterval(() => setElapsedSeconds((seconds) => seconds + 1), 1000);
+      };
+
+      connection.ontrack = ({ streams }) => {
+        if (!outputAudioRef.current || !streams[0]) return;
+        outputAudioRef.current.srcObject = streams[0];
+        void outputAudioRef.current.play().catch(() => undefined);
+      };
+      connection.onconnectionstatechange = () => {
+        if (connection.connectionState === 'failed' || connection.connectionState === 'disconnected') {
+          setStatus('error');
+          setError('The call dropped. You can try reconnecting.');
+        }
+      };
+
+      const offer = await connection.createOffer();
+      await connection.setLocalDescription(offer);
+      const response = await fetch(`${API_URL}/realtime/offer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/sdp' },
+        body: offer.sdp,
+      });
+      if (!response.ok) throw new Error(await response.text());
+      await connection.setRemoteDescription({ type: 'answer', sdp: await response.text() });
+    } catch {
+      stopCall();
+      setStatus('error');
+      setError('We could not start Maya. Check microphone access and that Qwen Realtime is enabled.');
+    }
+  };
+
+  const finishCall = () => {
+    stopCall();
+    router.push('/agent?stage=summary');
+  };
+
+  const time = `${String(Math.floor(elapsedSeconds / 60)).padStart(2, '0')}:${String(
+    elapsedSeconds % 60,
+  ).padStart(2, '0')}`;
+
+  return (
+    <main className={`call-page call-page--${status}`}>
+      <nav className="call-nav">
+        <Link className="wordmark" href="/">
+          COMMON<span>GROUND</span>
+          <i>®</i>
+        </Link>
+        <Link className="back-link" href="/agent">
+          ← BACK TO BRIEF
+        </Link>
+      </nav>
+      <section className="call-main">
+        <p className="eyebrow">MARKET ENTRY SESSION / {status === 'ready' ? 'READY' : 'LIVE'}</p>
+        <h1>
+          Meet your
+          <br />
+          <em>Australian guide.</em>
+        </h1>
+        <p>
+          A focused conversation with Maya, your virtual growth advisor. We&apos;ll add the
+          decisions you make here to your final market-entry report.
+        </p>
+        <div className="caller" aria-label={statusCopy[status]}>
+          <div>M</div>
+        </div>
+        <p className="call-status" aria-live="polite">
+          <span /> {statusCopy[status]}
+        </p>
+        {transcript.length > 0 && (
+          <div className="live-transcript" aria-live="polite">
+            {transcript.slice(-2).map((line, index) => (
+              <p key={`${line.speaker}-${index}`}>
+                <b>{line.speaker}</b>
+                {line.text}
+              </p>
+            ))}
+          </div>
+        )}
+        {error && <p className="call-error">{error}</p>}
+        <div className="call-controls">
+          {status === 'ready' || status === 'error' ? (
+            <button className="start-call" type="button" onClick={() => void startCall()}>
+              <PhoneIcon /> Start conversation
+            </button>
+          ) : (
+            <button className="circle-control end" type="button" onClick={finishCall} aria-label="End call">
+              <EndCallIcon />
+            </button>
+          )}
+        </div>
+      </section>
+      <audio ref={outputAudioRef} autoPlay playsInline />
+      <footer className="call-note">
+        <span>● {status === 'ready' ? 'MAYA READY' : 'CONNECTED TO MAYA'}</span>
+        <span>{time}</span>
+      </footer>
+    </main>
+  );
+}
