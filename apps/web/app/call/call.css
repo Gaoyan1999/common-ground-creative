@@ -35,38 +35,32 @@
   text-align: center;
 }
 .call-main .eyebrow {
-  margin: 0 0 1.2rem;
+  margin: 0 0 2rem;
   color: var(--brand-pale);
   font: 500 0.65rem var(--mono);
   letter-spacing: 0.1em;
+  opacity: 0.75;
 }
-.call-main h1 {
-  margin: 0 0 1.4rem;
+.caller-name {
+  margin: 0 0 0.3rem;
   color: #fff;
-  font-size: clamp(3.6rem, 6.3vw, 6.8rem);
-  font-weight: 800;
-  line-height: 0.82;
-  letter-spacing: -0.095em;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
-.call-main h1 em {
-  color: var(--brand-pale);
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 600;
-}
-.call-main > p:not(.call-status):not(.call-error) {
-  max-width: 32rem;
+.caller-role {
+  max-width: 24rem;
   margin: 0;
   color: #f0e2d2;
-  font-size: 0.92rem;
-  line-height: 1.62;
+  font-size: 0.82rem;
+  opacity: 0.85;
 }
 .caller {
   position: relative;
   display: grid;
-  width: 144px;
-  height: 144px;
-  margin: 3.25rem 0 1.6rem;
+  width: 176px;
+  height: 176px;
+  margin: 0 0 1.6rem;
   place-items: center;
   border: 1px solid rgba(240, 226, 210, 0.36);
   border-radius: 50%;
@@ -91,14 +85,14 @@
   position: relative;
   z-index: 1;
   display: grid;
-  width: 96px;
-  height: 96px;
+  width: 120px;
+  height: 120px;
   place-items: center;
   border-radius: 50%;
   background: #fff;
   color: var(--brand-active);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
-  font: 600 1.75rem var(--serif);
+  font: 600 2.1rem var(--serif);
 }
 .call-page--ready .caller::before,
 .call-page--ready .caller::after,
@@ -119,23 +113,29 @@
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  margin: 0 0 1.1rem;
+  margin: 1.3rem 0 1.1rem;
   color: #fff;
   font: 0.64rem var(--mono);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
-.call-status span {
+.call-status span:first-child {
   width: 0.46rem;
   height: 0.46rem;
   border-radius: 50%;
   background: var(--brand-pale);
   box-shadow: 0 0 0 0.27rem rgba(234, 217, 196, 0.15);
 }
-.call-page--thinking .call-status span {
+.call-timer {
+  padding-left: 0.55rem;
+  color: var(--brand-pale);
+  opacity: 0.8;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+}
+.call-page--thinking .call-status span:first-child {
   background: #f5c864;
 }
-.call-page--error .call-status span {
+.call-page--error .call-status span:first-child {
   background: #f28b7a;
 }
 .live-transcript {
@@ -170,55 +170,45 @@
 .call-controls {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  margin-top: 0.6rem;
 }
-.start-call {
-  display: inline-flex;
+.control-group {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.98rem 1.15rem;
-  border: 1px solid #fff;
-  border-radius: 3px;
-  background: #fff;
-  color: var(--brand-active);
-  font: 800 0.74rem var(--sans);
-  cursor: pointer;
-  transition:
-    transform 0.2s,
-    background 0.2s;
+  gap: 0.65rem;
 }
-.start-call:hover {
-  background: var(--brand-pale);
-  transform: translateY(-2px);
+.control-label {
+  color: var(--brand-pale);
+  font: 0.62rem var(--mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  opacity: 0.8;
 }
-.start-call svg,
 .circle-control svg {
-  width: 1rem;
-  height: 1rem;
+  width: 1.4rem;
+  height: 1.4rem;
 }
 .circle-control {
   display: grid;
-  width: 52px;
-  height: 52px;
+  width: 68px;
+  height: 68px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: none;
   border-radius: 50%;
-  background: transparent;
-  color: #fff;
   cursor: pointer;
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease;
+}
+.circle-control:hover {
+  transform: translateY(-2px);
+}
+.circle-control.start {
+  background: #34c266;
 }
 .circle-control.end {
-  border-color: var(--campaign);
   background: var(--campaign);
-}
-.call-note {
-  display: flex;
-  justify-content: space-between;
-  padding: 1.35rem 4.6vw;
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-  color: var(--brand-pale);
-  font: 0.62rem var(--mono);
-  letter-spacing: 0.06em;
 }
 @keyframes call-ripple {
   0% {
@@ -243,16 +233,12 @@
     justify-content: flex-start;
     padding: 4.4rem 1.25rem 3rem;
   }
-  .call-main h1 {
-    font-size: clamp(3.4rem, 15vw, 5.1rem);
-  }
   .caller {
-    margin: 3.5rem 0 1.55rem;
+    width: 152px;
+    height: 152px;
   }
-  .call-note {
-    padding: 1.2rem 1.25rem;
-  }
-  .call-note span:last-child {
-    display: none;
+  .caller div {
+    width: 104px;
+    height: 104px;
   }
 }

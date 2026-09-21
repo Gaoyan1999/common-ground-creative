@@ -176,21 +176,15 @@ export default function CallWorkspace() {
         </Link>
       </nav>
       <section className="call-main">
-        <p className="eyebrow">MARKET ENTRY SESSION / {status === 'ready' ? 'READY' : 'LIVE'}</p>
-        <h1>
-          Meet your
-          <br />
-          <em>Australian guide.</em>
-        </h1>
-        <p>
-          A focused conversation with Maya, your virtual growth advisor. We&apos;ll add the
-          decisions you make here to your final market-entry report.
-        </p>
+        <p className="eyebrow">MARKET ENTRY SESSION</p>
         <div className="caller" aria-label={statusCopy[status]}>
           <div>M</div>
         </div>
+        <h1 className="caller-name">Maya</h1>
+        <p className="caller-role">Australian Market-Entry Advisor</p>
         <p className="call-status" aria-live="polite">
           <span /> {statusCopy[status]}
+          {status !== 'ready' && status !== 'error' && <span className="call-timer">{time}</span>}
         </p>
         {transcript.length > 0 && (
           <div className="live-transcript" aria-live="polite">
@@ -205,21 +199,28 @@ export default function CallWorkspace() {
         {error && <p className="call-error">{error}</p>}
         <div className="call-controls">
           {status === 'ready' || status === 'error' ? (
-            <button className="start-call" type="button" onClick={() => void startCall()}>
-              <PhoneIcon /> Start conversation
-            </button>
+            <div className="control-group">
+              <button
+                className="circle-control start"
+                type="button"
+                onClick={() => void startCall()}
+                aria-label="Start conversation"
+              >
+                <PhoneIcon />
+              </button>
+              <span className="control-label">Start conversation</span>
+            </div>
           ) : (
-            <button className="circle-control end" type="button" onClick={finishCall} aria-label="End call">
-              <EndCallIcon />
-            </button>
+            <div className="control-group">
+              <button className="circle-control end" type="button" onClick={finishCall} aria-label="End call">
+                <EndCallIcon />
+              </button>
+              <span className="control-label">End call</span>
+            </div>
           )}
         </div>
       </section>
       <audio ref={outputAudioRef} autoPlay playsInline />
-      <footer className="call-note">
-        <span>● {status === 'ready' ? 'MAYA READY' : 'CONNECTED TO MAYA'}</span>
-        <span>{time}</span>
-      </footer>
     </main>
   );
 }
