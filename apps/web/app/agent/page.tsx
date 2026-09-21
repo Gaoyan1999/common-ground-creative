@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FormEvent, useState } from 'react';
 
 export default function AgentPage() {
@@ -7,9 +8,9 @@ export default function AgentPage() {
   const [message, setMessage] = useState('');
   function submit(event: FormEvent) { event.preventDefault(); if (message.trim()) { setSent(true); setMessage(''); } }
   return <main className="agent-page">
-    <nav className="agent-top"><Link className="wordmark" href="/">COMMON<span>GROUND</span><i>®</i></Link><Link className="back-link" href="/">← HOME</Link><span className="agent-status"><b /> BRIEFING AGENT ONLINE</span></nav>
+    <nav className="agent-top"><Link className="agent-brand" href="/" aria-label="Common Ground Creative home"><Image src="/brand/common-ground-creative-master-logo.png" alt="Common Ground Creative" width={1774} height={887} priority /></Link><Link className="back-link" href="/">← BACK TO HOME</Link><span className="agent-status"><b /> MARKET BRIEF IN PROGRESS</span></nav>
     <div className="agent-layout">
-      <aside className="agent-aside"><p className="eyebrow">AU MARKET ENTRY / 01</p><h1>Your first<br /><em>local read.</em></h1><p>Give us the context behind your brand. We&apos;ll turn it into a sharp first view of your opportunity in Australia.</p><div className="mini-process"><div><strong>1</strong> Brand context</div><div><strong>2</strong> Market signal</div><div><strong>3</strong> Expert call</div></div></aside>
+      <aside className="agent-aside"><p className="eyebrow">AUSTRALIAN MARKET BRIEF / 01</p><h1>Your first<br />local read.</h1><p>Share the context behind your brand. We&apos;ll turn it into a practical first view of your Australian opportunity.</p><div className="mini-process"><div><strong>1</strong> Brand context <span>Complete</span></div><div><strong>2</strong> Market signal <span>In progress</span></div><div><strong>3</strong> Launch direction <span>Next</span></div></div></aside>
       <section className="agent-workspace"><div className="conversation">
         <div className="message assistant-message"><p className="message-label">COMMON GROUND / 09:41</p><p>Welcome. I&apos;m here to help you make your first Australian move with more clarity. Start by telling me about your brand, product and where you&apos;re seeing momentum today.</p></div>
         <div className="message"><p className="message-label">YOU / 09:42</p><p>We&apos;re a Singapore-based DTC skincare brand. We&apos;ve built a strong audience around barrier repair and sensitive skin, and we&apos;re exploring an Australian launch this year.</p></div>
