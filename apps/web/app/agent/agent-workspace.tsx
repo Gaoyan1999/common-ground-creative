@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ChangeEvent, useState } from 'react';
+import type { MarketAnalysis } from '@common-ground/shared';
 
 type Stage = 'upload' | 'signal' | 'summary' | 'report';
 
@@ -41,19 +42,41 @@ function AnalysisIcon() {
 export default function AgentWorkspace({ initialStage }: { initialStage: 'upload' | 'summary' }) {
   const [stage, setStage] = useState<Stage>(initialStage);
   const [fileName, setFileName] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [isAnalysing, setIsAnalysing] = useState(false);
+  const [analysis, setAnalysis] = useState<MarketAnalysis | null>(null);
+  const [analysisError, setAnalysisError] = useState('');
   const progress = stage === 'upload' ? 1 : stage === 'signal' ? 2 : stage === 'summary' ? 3 : 4;
   function selectFile(event: ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.target.files?.[0];
-    if (selectedFile) setFileName(selectedFile.name);
+    if (selectedFile) {
+      setFileName(selectedFile.name);
+      setFile(selectedFile);
+      setAnalysisError('');
+    }
   }
-  function analyseDocument() {
-    if (!fileName) return;
+  async function analyseDocument() {
+    if (!file) return;
     setIsAnalysing(true);
-    window.setTimeout(() => {
-      setIsAnalysing(false);
+    setAnalysisError('');
+    try {
+      const body = new FormData();
+      body.append('document', file);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/brief/analyse`,
+        { method: 'POST', body },
+      );
+      const result = (await response.json()) as MarketAnalysis | { message?: string };
+      if (!response.ok || !('summary' in result)) {
+        throw new Error('message' in result ? result.message : 'Analysis could not be completed.');
+      }
+      setAnalysis(result);
       setStage('signal');
-    }, 1100);
+    } catch (error) {
+      setAnalysisError(error instanceof Error ? error.message : 'Analysis could not be completed.');
+    } finally {
+      setIsAnalysing(false);
+    }
   }
 
   return (
@@ -137,26 +160,25 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                 </label>
                 <button
                   className="analyse-button"
-                  disabled={!fileName || isAnalysing}
+                  disabled={!file || isAnalysing}
                   onClick={analyseDocument}
                 >
                   {isAnalysing ? 'Analysing company context…' : 'Analyse company context'}{' '}
                   <span>↗</span>
                 </button>
-                <p className="upload-note">
-                  Demo mode — your file stays in this browser and is not sent anywhere.
-                </p>
+                {analysisError && (
+                  <p className="upload-error" role="alert">
+                    {analysisError}
+                  </p>
+                )}
+                <p className="upload-note">Your document is used only to generate this analysis.</p>
               </div>
             )}
             {stage === 'signal' && (
               <>
                 <div className="message assistant-message">
                   <p className="message-label">COMMON GROUND / ANALYSIS COMPLETE</p>
-                  <p>
-                    I&apos;ve reviewed <b>{fileName}</b>. Your product story has strong early
-                    alignment with Australia&apos;s considered skincare category — particularly
-                    where proof and accessibility meet.
-                  </p>
+                  <p>{analysis?.summary}</p>
                 </div>
                 <article className="brief-card">
                   <div className="brief-card-top">
@@ -169,21 +191,18 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                   <div className="brief-insight">
                     <div>
                       <span>PRODUCT FIT</span>
-                      <b>High potential</b>
+                      <b>{analysis?.productFit}</b>
                     </div>
                     <div>
                       <span>PRIMARY AUDIENCE</span>
-                      <b>25–39, ingredient-led</b>
+                      <b>{analysis?.primaryAudience}</b>
                     </div>
                     <div>
                       <span>OPENING CHANNEL</span>
-                      <b>Meta + creator proof</b>
+                      <b>{analysis?.openingChannel}</b>
                     </div>
                   </div>
-                  <p>
-                    Your clearest entry position: everyday barrier care, translated through
-                    proof-led creator stories and a hero-product launch.
-                  </p>
+                  <p>{analysis?.marketOpportunity}</p>
                   <div className="brief-card-actions">
                     <Link href="/call" className="dark-button">
                       Discuss this with Maya ↗
