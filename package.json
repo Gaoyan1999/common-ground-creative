@@ -1,0 +1,17 @@
+{
+  "name": "common-ground-creative",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.27.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @common-ground/web --filter @common-ground/api dev",
+    "build": "pnpm --filter @common-ground/shared build && pnpm --filter @common-ground/web build && pnpm --filter @common-ground/api build",
+    "typecheck": "pnpm --filter @common-ground/shared build && pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.9.8"
+  }
+}
