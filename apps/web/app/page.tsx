@@ -22,6 +22,9 @@ const faqs = [
   ['Can you execute the campaign?', 'Yes. Once the strategy is approved, Common Ground Creative can connect you with a marketing specialist to review, refine and deliver the work.'],
 ];
 
+const scrollTags = ['HTML', 'CSS', 'JS', 'SSG', 'webdev', 'animation', 'UI/UX'];
+const scrollAvatars = [1, 2, 3, 4, 5, 6];
+
 export default function Home() {
   return <main className="site-shell">
     <nav className="top-nav">
@@ -37,6 +40,23 @@ export default function Home() {
     </section>
 
     <section className="proof-bar"><div><strong>LOCAL</strong><span>Customer intelligence before campaign spend</span></div><div><strong>CLEAR</strong><span>A single strategy across message, channel and budget</span></div><div><strong>READY</strong><span>Expert-backed support when it is time to launch</span></div></section>
+
+    <section className="infinite-scroll-section" aria-labelledby="infinite-scroll-heading">
+      <header><p className="label">INTERACTION STUDY</p><h2 id="infinite-scroll-heading">Infinite Scroll Animation</h2></header>
+      <div className="scroller" data-animated="true" data-speed="fast">
+        <ul className="tag-list scroller__inner">
+          {scrollTags.map((tag) => <li key={tag}>{tag}</li>)}
+          {scrollTags.map((tag) => <li key={`duplicate-${tag}`} aria-hidden="true">{tag}</li>)}
+        </ul>
+      </div>
+      <div className="scroller avatar-scroller" data-animated="true" data-direction="right" data-speed="slow">
+        <div className="scroller__inner">
+          {scrollAvatars.map((avatar) => <img key={avatar} src={`https://i.pravatar.cc/150?img=${avatar}`} alt="" width="150" height="150" loading="lazy" decoding="async" />)}
+          {scrollAvatars.map((avatar) => <img key={`duplicate-${avatar}`} src={`https://i.pravatar.cc/150?img=${avatar}`} alt="" width="150" height="150" loading="lazy" decoding="async" aria-hidden="true" />)}
+        </div>
+      </div>
+      <a className="yt" href="https://youtu.be/pKHKQwAsZLI">Watch the tutorial <span>↗</span></a>
+    </section>
 
     <section className="results"><header className="section-header"><p className="label">THE OPPORTUNITY</p><h2>Turn a new market<br />into your next<br /><em>growth engine.</em></h2><p>Most brands do not fail because their product is wrong. They struggle because local insight never becomes a practical, coordinated launch plan.</p></header><div className="result-cards"><article><span>MARKET SIGNAL</span><h3>Know where your brand fits.</h3><p>Understand the people, category expectations and competitive whitespace worth pursuing.</p></article><article><span>LOCAL STORY</span><h3>Give customers a reason to care.</h3><p>Translate your product&apos;s value into positioning and messages that feel at home in Australia.</p></article><article><span>REAL ACTIVATION</span><h3>Move from plan to market.</h3><p>Prioritise the right channels and campaign tests, then bring local expertise into execution.</p></article></div></section>
 
