@@ -30,9 +30,24 @@
   flex: 1;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 4rem 1.5rem;
+  justify-content: flex-start;
+  padding: 4.5rem 1.5rem 4rem;
   text-align: center;
+}
+.call-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3rem;
+}
+.call-mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.8rem;
+}
+.call-controls {
+  margin-top: auto;
 }
 .call-main .eyebrow {
   margin: 0 0 2rem;
@@ -81,18 +96,12 @@
   inset: -42px;
   animation-delay: 1.1s;
 }
-.caller div {
-  position: relative;
+.caller img {
   z-index: 1;
-  display: grid;
-  width: 120px;
-  height: 120px;
-  place-items: center;
   border-radius: 50%;
-  background: #fff;
-  color: var(--brand-active);
+  object-fit: cover;
+  background: #f0e2d2;
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
-  font: 600 2.1rem var(--serif);
 }
 .call-page--ready .caller::before,
 .call-page--ready .caller::after,
@@ -170,7 +179,6 @@
 .call-controls {
   display: flex;
   justify-content: center;
-  margin-top: 0.6rem;
 }
 .control-group {
   display: flex;
@@ -230,15 +238,13 @@
     justify-self: end;
   }
   .call-main {
-    justify-content: flex-start;
-    padding: 4.4rem 1.25rem 3rem;
+    padding: 3rem 1.25rem 3rem;
+  }
+  .call-top {
+    margin-top: 0;
   }
   .caller {
     width: 152px;
     height: 152px;
-  }
-  .caller div {
-    width: 104px;
-    height: 104px;
   }
 }
