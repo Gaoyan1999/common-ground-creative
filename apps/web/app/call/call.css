@@ -18,7 +18,7 @@
 }
 .call-nav .back-link {
   justify-self: center;
-  color: #c9ded2;
+  color: #f0e2d2;
 }
 .call-nav .back-link:hover {
   color: #fff;
@@ -36,7 +36,7 @@
 }
 .call-main .eyebrow {
   margin: 0 0 1.2rem;
-  color: #c1dfcf;
+  color: var(--brand-pale);
   font: 500 0.65rem var(--mono);
   letter-spacing: 0.1em;
 }
@@ -49,7 +49,7 @@
   letter-spacing: -0.095em;
 }
 .call-main h1 em {
-  color: #c1dfcf;
+  color: var(--brand-pale);
   font-family: var(--serif);
   font-style: italic;
   font-weight: 600;
@@ -57,7 +57,7 @@
 .call-main > p:not(.call-status):not(.call-error) {
   max-width: 32rem;
   margin: 0;
-  color: #dcece2;
+  color: #f0e2d2;
   font-size: 0.92rem;
   line-height: 1.62;
 }
@@ -68,14 +68,14 @@
   height: 144px;
   margin: 3.25rem 0 1.6rem;
   place-items: center;
-  border: 1px solid rgba(221, 240, 228, 0.36);
+  border: 1px solid rgba(240, 226, 210, 0.36);
   border-radius: 50%;
   transition: border-color 180ms ease;
 }
 .caller::before,
 .caller::after {
   position: absolute;
-  border: 1px solid rgba(206, 239, 218, 0.5);
+  border: 1px solid rgba(234, 217, 196, 0.5);
   border-radius: 50%;
   content: '';
   animation: call-ripple 2.2s ease-out infinite;
@@ -97,7 +97,7 @@
   border-radius: 50%;
   background: #fff;
   color: var(--brand-active);
-  box-shadow: 0 14px 32px rgba(15, 46, 31, 0.28);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
   font: 600 1.75rem var(--serif);
 }
 .call-page--ready .caller::before,
@@ -129,8 +129,8 @@
   width: 0.46rem;
   height: 0.46rem;
   border-radius: 50%;
-  background: #c1dfcf;
-  box-shadow: 0 0 0 0.27rem rgba(193, 223, 207, 0.12);
+  background: var(--brand-pale);
+  box-shadow: 0 0 0 0.27rem rgba(234, 217, 196, 0.15);
 }
 .call-page--thinking .call-status span {
   background: #f5c864;
@@ -150,14 +150,14 @@
 }
 .live-transcript p {
   margin: 0.2rem 0;
-  color: #e8f2eb;
+  color: #f0e2d2;
   font-size: 0.77rem;
   line-height: 1.48;
 }
 .live-transcript b {
   display: inline-block;
   min-width: 3.2rem;
-  color: #c1dfcf;
+  color: var(--brand-pale);
   font: 0.61rem var(--mono);
   letter-spacing: 0.06em;
 }
@@ -216,7 +216,7 @@
   justify-content: space-between;
   padding: 1.35rem 4.6vw;
   border-top: 1px solid rgba(255, 255, 255, 0.16);
-  color: #c1dfcf;
+  color: var(--brand-pale);
   font: 0.62rem var(--mono);
   letter-spacing: 0.06em;
 }
