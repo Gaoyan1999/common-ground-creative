@@ -29,6 +29,19 @@ const realtimeEndpoint = () => {
   return `${protocol}//${host}/api/v1/webrtc/realtime`;
 };
 const maxDocumentCharacters = 30_000;
+const mockMarketAnalysis = marketAnalysisSchema.parse({
+  summary:
+    'A considered consumer brand with a clear product story and a credible starting point for an Australian market-entry conversation.',
+  productFit: 'Well suited to a digitally led Australian launch, subject to local pricing and category validation.',
+  primaryAudience: 'Design-conscious Australian consumers seeking differentiated, purpose-led products.',
+  openingChannel: 'Begin with a focused DTC launch supported by creator partnerships and targeted paid social.',
+  marketOpportunity:
+    'Australia offers a useful test market for a focused launch: consumers are comfortable discovering emerging brands online, while a clear local proposition can build trust before broader retail expansion.',
+});
+
+function isLlmEnabled() {
+  return process.env.LLM_ENABLED?.toLowerCase() !== 'false';
+}
 
 await app.register(cors, {
   origin: process.env.WEB_ORIGIN ?? 'http://localhost:3000',
@@ -119,6 +132,11 @@ app.post('/brief/analyse', async (request, reply) => {
 });
 
 async function analyseCompanyDocument(documentText: string) {
+  // This deliberately applies only to document analysis. Realtime voice is configured separately.
+  if (!isLlmEnabled()) {
+    return mockMarketAnalysis;
+  }
+
   const apiKey = process.env.DASHSCOPE_API_KEY;
   const baseUrl = process.env.DASHSCOPE_BASE_URL;
   const model = process.env.DASHSCOPE_MODEL;
