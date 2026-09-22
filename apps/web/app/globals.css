@@ -226,6 +226,7 @@ footer p { margin:0; color:var(--brand-pale); font-size:.7rem; }footer p:last-ch
 .report-callout { display:grid; grid-template-columns:7rem 1fr; gap:1rem; margin-top:1.6rem; padding:1.1rem 0; border-top:1px solid #b26c54; border-bottom:1px solid #b26c54; }
 .report-callout p { margin:0; font-size:.83rem; font-weight:600; line-height:1.48; }
 .report-section-heading--compact { margin-bottom:1.55rem; }
+.report-section-heading--compact h3 { font-size:clamp(2.35rem,4.25vw,3.95rem); }
 .report-table { border-top:1px solid #a8937c; border-bottom:1px solid #a8937c; }
 .report-table-row { display:grid; grid-template-columns:.72fr 1.65fr 1.2fr; gap:1rem; padding:1rem 0; border-top:1px solid #cdbba6; color:#5a4a3c; font-size:.72rem; line-height:1.45; }
 .report-table-row:first-child { border-top:0; }
