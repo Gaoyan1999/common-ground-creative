@@ -130,10 +130,13 @@ export default function CallWorkspace() {
     const mayaContext = getMayaContext();
 
     try {
+      // This must run within the click handler. Waiting until the API request
+      // returns can make browsers block the avatar's remote audio autoplay.
+      const avatarRoom = new Room();
+      void avatarRoom.startAudio().catch(() => undefined);
       const avatarResponse = await fetch(`${API_URL}/avatar/session`, { method: 'POST' });
       if (avatarResponse.ok) {
         const session = (await avatarResponse.json()) as { url: string; token: string };
-        const avatarRoom = new Room();
         avatarRoomRef.current = avatarRoom;
         const attachAvatarTrack = (track: Track) => {
           if (track.kind === Track.Kind.Video && avatarVideoRef.current) {
@@ -167,6 +170,8 @@ export default function CallWorkspace() {
         );
         return;
       }
+
+      await avatarRoom.disconnect();
 
       const avatarError = await avatarResponse.json().catch(() => null) as {
         message?: string;
