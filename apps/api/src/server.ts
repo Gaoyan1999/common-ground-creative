@@ -79,6 +79,10 @@ function isLlmEnabled() {
   return process.env.LLM_ENABLED?.toLowerCase() !== 'false';
 }
 
+function isMockReportEnabled() {
+  return process.env.MOCK_REPORT?.toLowerCase() === 'true';
+}
+
 await app.register(cors, {
   origin: process.env.WEB_ORIGIN ?? 'http://localhost:3000',
 });
@@ -264,7 +268,7 @@ async function analyseCompanyDocument(documentText: string, additionalContext = 
 }
 
 async function generateMarketEntryReport(background: string, transcript: string) {
-  if (!isLlmEnabled()) {
+  if (isMockReportEnabled() || !isLlmEnabled()) {
     return mockMarketEntryReport;
   }
 
