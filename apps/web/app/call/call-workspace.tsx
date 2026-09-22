@@ -135,7 +135,7 @@ export default function CallWorkspace() {
         const session = (await avatarResponse.json()) as { url: string; token: string };
         const avatarRoom = new Room();
         avatarRoomRef.current = avatarRoom;
-        avatarRoom.on(RoomEvent.TrackSubscribed, (track) => {
+        const attachAvatarTrack = (track: Track) => {
           if (track.kind === Track.Kind.Video && avatarVideoRef.current) {
             track.attach(avatarVideoRef.current);
             setIsAvatarVideo(true);
@@ -144,13 +144,21 @@ export default function CallWorkspace() {
             track.attach(outputAudioRef.current);
             void outputAudioRef.current.play().catch(() => undefined);
           }
-        });
+        };
+        avatarRoom.on(RoomEvent.TrackSubscribed, attachAvatarTrack);
         avatarRoom.on(RoomEvent.Disconnected, () => {
           setIsAvatarVideo(false);
           setStatus('error');
           setError('The Maya avatar session ended. You can reconnect.');
         });
         await avatarRoom.connect(session.url, session.token);
+        // An avatar may publish before connect() resolves. Attach any already
+        // subscribed tracks as well as tracks announced by the event above.
+        for (const participant of avatarRoom.remoteParticipants.values()) {
+          for (const publication of participant.trackPublications.values()) {
+            if (publication.track) attachAvatarTrack(publication.track);
+          }
+        }
         await avatarRoom.localParticipant.setMicrophoneEnabled(true);
         setStatus('listening');
         timerRef.current = window.setInterval(
