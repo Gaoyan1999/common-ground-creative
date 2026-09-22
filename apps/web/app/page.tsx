@@ -11,8 +11,8 @@ const steps = [
 const marqueeLogos = [
   { src: '/logos/ahri.png', width: 1897, height: 829 },
   { src: '/logos/the-marketing-club.png', width: 2170, height: 725 },
-  { src: '/logos/coles.png', width: 2147, height: 672 },
-  { src: '/logos/bupa.png', width: 2066, height: 568 },
+  { src: '/logos/coles-clean.png', width: 2172, height: 724 },
+  { src: '/logos/bupa-clean.png', width: 2172, height: 724 },
 ];
 
 export default function Home() {
