@@ -33,9 +33,9 @@ export default function Home() {
       <section className="arc-hero" id="about">
         <div className="arc-hero-copy">
           <p className="arc-kicker">AI MARKET ENTRY PLATFORM / AUSTRALIA</p>
-          <h1>Enter Australia.<br />Execute with<br />confidence.</h1>
-          <p className="arc-intro">Turn market insight into an executable Australian growth plan — powered by AI and reviewed by marketing specialists.</p>
-          <Link className="arc-primary-button" href="/agent">Build my plan <span>→</span></Link>
+          <h1>Enter Australia<br />smarter with AI.</h1>
+          <p className="arc-intro">Understand the market, build a localised strategy, and connect with the people and partners you need to launch and grow.</p>
+          <Link className="arc-primary-button" href="/agent">Build My Marketing Plan <span>→</span></Link>
         </div>
 
         <aside className="snapshot-card" aria-label="Example market snapshot">
