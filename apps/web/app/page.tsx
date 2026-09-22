@@ -8,13 +8,11 @@ const steps = [
   ['04', 'Final Report', 'Receive a structured plan your team can execute.'],
 ];
 
-const marqueeItems = [
-  'Australian customer signals',
-  'Local positioning',
-  'Channel priorities',
-  'Launch budget',
-  'Creator strategy',
-  'Campaign planning',
+const marqueeLogos = [
+  { src: '/logos/ahri.png', width: 1897, height: 829 },
+  { src: '/logos/the-marketing-club.png', width: 2170, height: 725 },
+  { src: '/logos/coles.png', width: 2147, height: 672 },
+  { src: '/logos/bupa.png', width: 2066, height: 568 },
 ];
 
 export default function Home() {
@@ -57,8 +55,16 @@ export default function Home() {
         <h2 id="plan-covers-heading">What your plan covers</h2>
         <div className="scroller" data-animated="true" data-speed="slow">
           <ul className="tag-list scroller__inner">
-            {marqueeItems.map((item) => <li key={item}>{item}</li>)}
-            {marqueeItems.map((item) => <li key={`${item}-duplicate`} aria-hidden="true">{item}</li>)}
+            {marqueeLogos.map((logo) => (
+              <li key={logo.src}>
+                <Image src={logo.src} alt="" width={logo.width} height={logo.height} />
+              </li>
+            ))}
+            {marqueeLogos.map((logo) => (
+              <li key={`${logo.src}-duplicate`} aria-hidden="true">
+                <Image src={logo.src} alt="" width={logo.width} height={logo.height} />
+              </li>
+            ))}
           </ul>
         </div>
       </section>
