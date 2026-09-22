@@ -315,7 +315,77 @@ async function generateMarketEntryReport(background: string, transcript: string)
   if (!content) throw new Error('The language model returned an empty report.');
 
   const json = content.replace(/^```json\s*|\s*```$/g, '').trim();
-  return marketEntryReportSchema.parse(JSON.parse(json));
+  return marketEntryReportSchema.parse(normaliseMarketEntryReport(JSON.parse(json)));
+}
+
+function compactReportText(value: unknown, limit: number, fallback = 'Not specified') {
+  const text = typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  if (!text) return fallback;
+  return text.length > limit ? `${text.slice(0, limit - 1).trimEnd()}…` : text;
+}
+
+function normaliseMarketEntryReport(value: unknown) {
+  const report = value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+  const channelFallbacks = [
+    { channel: 'Creator and paid social', rationale: 'Build local proof before scaling investment.' },
+    { channel: 'Owned education', rationale: 'Turn high-intent interest into clearer product understanding.' },
+    { channel: 'Selective retail', rationale: 'Use validated demand before wholesale outreach.' },
+  ];
+  const planFallbacks = [
+    { phase: 'Days 1-30', focus: 'Test the core product message.', successSignal: 'Clear learning signal.' },
+    { phase: 'Days 31-60', focus: 'Validate the strongest channel.', successSignal: 'Repeatable customer response.' },
+    { phase: 'Days 61-90', focus: 'Refine and prepare to scale.', successSignal: 'A clear next investment decision.' },
+  ];
+  const rawChannels = Array.isArray(report.channelPriorities) ? report.channelPriorities : [];
+  const rawPlan = Array.isArray(report.ninetyDayPlan) ? report.ninetyDayPlan : [];
+  const rawWatchouts = Array.isArray(report.watchouts) ? report.watchouts : [];
+
+  const channelPriorities = channelFallbacks.map((fallback, index) => {
+    const item = rawChannels[index] && typeof rawChannels[index] === 'object'
+      ? (rawChannels[index] as Record<string, unknown>)
+      : {};
+    return {
+      channel: compactReportText(item.channel, 80, fallback.channel),
+      rationale: compactReportText(item.rationale, 180, fallback.rationale),
+    };
+  });
+  const ninetyDayPlan = planFallbacks.map((fallback, index) => {
+    const item = rawPlan[index] && typeof rawPlan[index] === 'object'
+      ? (rawPlan[index] as Record<string, unknown>)
+      : {};
+    return {
+      phase: compactReportText(item.phase, 40, fallback.phase),
+      focus: compactReportText(item.focus, 220, fallback.focus),
+      successSignal: compactReportText(item.successSignal, 180, fallback.successSignal),
+    };
+  });
+  const watchouts = rawWatchouts
+    .slice(0, 4)
+    .map((item) => compactReportText(item, 180, ''))
+    .filter(Boolean);
+  while (watchouts.length < 2) {
+    watchouts.push(
+      watchouts.length === 0
+        ? 'Keep product and advertising claims substantiated for the Australian market.'
+        : 'Do not scale investment before the first market test produces a clear learning signal.',
+    );
+  }
+
+  return {
+    brandName: compactReportText(report.brandName, 80, 'Australian market-entry report'),
+    reportTitle: compactReportText(report.reportTitle, 100, 'Market-entry readout'),
+    executiveSummary: compactReportText(report.executiveSummary, 600),
+    opportunityHeadline: compactReportText(report.opportunityHeadline, 120),
+    marketOpportunity: compactReportText(report.marketOpportunity, 420),
+    primaryAudience: compactReportText(report.primaryAudience, 180),
+    positioning: compactReportText(report.positioning, 180),
+    commercialSignal: compactReportText(report.commercialSignal, 180),
+    recommendation: compactReportText(report.recommendation, 260),
+    channelPriorities,
+    ninetyDayPlan,
+    watchouts,
+    nextDecision: compactReportText(report.nextDecision, 220),
+  };
 }
 
 app.setErrorHandler((error, _request, reply) => {
