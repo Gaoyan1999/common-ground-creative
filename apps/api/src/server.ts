@@ -173,8 +173,13 @@ function isMockReportEnabled() {
   return process.env.MOCK_REPORT?.toLowerCase() === 'true';
 }
 
+const allowedWebOrigins = new Set([
+  process.env.WEB_ORIGIN ?? 'http://localhost:3000',
+  'http://127.0.0.1:3000',
+]);
+
 await app.register(cors, {
-  origin: process.env.WEB_ORIGIN ?? 'http://localhost:3000',
+  origin: (origin, callback) => callback(null, !origin || allowedWebOrigins.has(origin)),
 });
 await app.register(multipart, {
   limits: { files: 1, fileSize: 10 * 1024 * 1024 },
