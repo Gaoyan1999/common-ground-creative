@@ -40,10 +40,10 @@ export default function Home() {
 
         <aside className="snapshot-card" aria-label="Projected Australia launch impact preview">
           <Image
-            src="/brand/xiaomi-launch-impact.png"
+            src="/brand/xiaomi-launch-impact-black.png"
             alt="Projected Australia Launch Impact for the Xiaomi YU7 GT"
-            width={1307}
-            height={950}
+            width={1471}
+            height={1069}
           />
         </aside>
       </section>
