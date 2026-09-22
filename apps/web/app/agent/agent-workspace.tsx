@@ -86,8 +86,10 @@ function saveMayaCallContext(briefContext: BriefContext, analysis: MarketAnalysi
     briefContext.goals && `Stated goal: ${compactContext(briefContext.goals, 220)}`,
     analysis?.summary && `Initial analysis: ${compactContext(analysis.summary, 360)}`,
     analysis?.productFit && `Product fit: ${compactContext(analysis.productFit, 120)}`,
-    analysis?.primaryAudience && `Likely audience: ${compactContext(analysis.primaryAudience, 120)}`,
-    analysis?.openingChannel && `Potential opening channel: ${compactContext(analysis.openingChannel, 120)}`,
+    analysis?.primaryAudience &&
+      `Likely audience: ${compactContext(analysis.primaryAudience, 120)}`,
+    analysis?.openingChannel &&
+      `Potential opening channel: ${compactContext(analysis.openingChannel, 120)}`,
   ]
     .filter(Boolean)
     .join('\n');
@@ -141,72 +143,123 @@ function AnalysisIcon() {
 }
 
 function DemoMarketReport({ report }: { report: MarketEntryReport }) {
+  const sections = [
+    ['01', 'BUSINESS', report.business],
+    ['02', 'MARKET', report.market],
+    ['03', 'CUSTOMERS', report.customers],
+    ['04', 'STRATEGY', report.strategy],
+    ['05', 'BUDGET', report.budget],
+    ['06', 'CAMPAIGN', report.campaign],
+  ] as const;
+
   return (
     <article className="market-report" aria-label="Demo Australian market-entry report">
       <section className="report-page report-page--cover">
         <header className="report-header">
-          <span className="report-brand">COMMON<br />GROUND<br />CREATIVE</span>
+          <span className="report-brand">
+            COMMON
+            <br />
+            GROUND
+            <br />
+            CREATIVE
+          </span>
           <span>AUSTRALIAN MARKET ENTRY REPORT</span>
           <b>DEMO</b>
         </header>
         <div className="report-cover-copy">
           <p>SYDNEY / AUSTRALIA / SEPTEMBER 2026</p>
-          <h3>{report.brandName}<br /><em>{report.reportTitle}</em></h3>
+          <h3>
+            {report.brandName}
+            <br />
+            <em>{report.reportTitle}</em>
+          </h3>
           <p className="report-lead">
-            {report.executiveSummary}
+            A simple six-part view of the Australian market-entry opportunity.
           </p>
         </div>
         <div className="report-kpis">
-          <div><span>PRIMARY AUDIENCE</span><b>Priority</b><small>{report.primaryAudience}</small></div>
-          <div><span>OPENING MARKET</span><b>Australia</b><small>validate local fit before scale</small></div>
-          <div><span>TEST WINDOW</span><b>90 days</b><small>focused learning period</small></div>
+          <div>
+            <span>REPORT FORMAT</span>
+            <b>6 sections</b>
+            <small>simple and decision-ready</small>
+          </div>
+          <div>
+            <span>OPENING MARKET</span>
+            <b>Australia</b>
+            <small>validate local fit before scale</small>
+          </div>
+          <div>
+            <span>TEST WINDOW</span>
+            <b>90 days</b>
+            <small>focused learning period</small>
+          </div>
         </div>
         <footer>Prepared for demo purposes · Common Ground Creative</footer>
       </section>
 
       <section className="report-page">
         <header className="report-header">
-          <span className="report-brand">COMMON<br />GROUND<br />CREATIVE</span>
-          <span>01 / OPPORTUNITY &amp; AUDIENCE</span>
+          <span className="report-brand">
+            COMMON
+            <br />
+            GROUND
+            <br />
+            CREATIVE
+          </span>
+          <span>01 / BUSINESS, MARKET &amp; CUSTOMERS</span>
           <b>01</b>
         </header>
         <div className="report-section-heading">
-          <p>EXECUTIVE SUMMARY</p>
-          <h3>{report.opportunityHeadline}</h3>
-          <p>
-            {report.marketOpportunity}
-          </p>
+          <p>THE ESSENTIALS</p>
+          <h3>
+            Start clear,
+            <br />
+            <em>then test.</em>
+          </h3>
         </div>
         <div className="report-insight-grid">
-          <article><span>01 / POSITIONING</span><h4>{report.positioning}</h4><p>Use this as the clearest local entry point across the product story, creator brief and landing page.</p></article>
-          <article><span>02 / CUSTOMER</span><h4>{report.primaryAudience}</h4><p>Prioritise the customer tension and decision trigger over broad demographic reach.</p></article>
-          <article><span>03 / COMMERCIAL SIGNAL</span><h4>{report.commercialSignal}</h4><p>Use the first market test to validate this commercial assumption before expanding investment.</p></article>
+          {sections.slice(0, 3).map(([number, title, content]) => (
+            <article key={title}>
+              <span>
+                {number} / {title}
+              </span>
+              <p>{content}</p>
+            </article>
+          ))}
         </div>
-        <div className="report-callout"><span>RECOMMENDATION</span><p>{report.recommendation}</p></div>
         <footer>Solace Skin demo report · Page 2 of 3</footer>
       </section>
 
       <section className="report-page">
         <header className="report-header">
-          <span className="report-brand">COMMON<br />GROUND<br />CREATIVE</span>
-          <span>02 / GO-TO-MARKET PLAN</span>
+          <span className="report-brand">
+            COMMON
+            <br />
+            GROUND
+            <br />
+            CREATIVE
+          </span>
+          <span>02 / STRATEGY, BUDGET &amp; CAMPAIGN</span>
           <b>02</b>
         </header>
         <div className="report-section-heading report-section-heading--compact">
-          <p>CHANNEL &amp; ACTIVATION</p>
-          <h3>Build proof in public,<br /><em>then buy scale.</em></h3>
+          <p>THE PLAN</p>
+          <h3>
+            Focus spend,
+            <br />
+            <em>build proof.</em>
+          </h3>
         </div>
-        <div className="report-table" role="table" aria-label="90-day launch plan">
-          <div className="report-table-row report-table-head" role="row"><span>PHASE</span><span>FOCUS</span><span>SUCCESS SIGNAL</span></div>
-          {report.ninetyDayPlan.map((step) => (
-            <div className="report-table-row" role="row" key={step.phase}><span>{step.phase}</span><span>{step.focus}</span><span>{step.successSignal}</span></div>
+        <div className="report-insight-grid">
+          {sections.slice(3).map(([number, title, content]) => (
+            <article key={title}>
+              <span>
+                {number} / {title}
+              </span>
+              <p>{content}</p>
+            </article>
           ))}
         </div>
-        <div className="report-bottom-grid">
-          <div><span>CHANNEL PRIORITY</span><ol>{report.channelPriorities.map((item) => <li key={item.channel}><b>{item.channel}</b> - {item.rationale}</li>)}</ol></div>
-          <div><span>WATCHOUTS</span><p>{report.watchouts.join(' ')}</p></div>
-        </div>
-        <div className="report-callout"><span>NEXT DECISION</span><p>{report.nextDecision}</p></div>
         <footer>Solace Skin demo report · Page 3 of 3</footer>
       </section>
     </article>
@@ -256,13 +309,17 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
           },
         );
         const result = (await response.json()) as MarketEntryReport | { message?: string };
-        if (!response.ok || !('executiveSummary' in result)) {
-          throw new Error('message' in result ? result.message : 'The report could not be generated.');
+        if (!response.ok || !('business' in result)) {
+          throw new Error(
+            'message' in result ? result.message : 'The report could not be generated.',
+          );
         }
         if (!cancelled) setReport(result);
       } catch (error) {
         if (!cancelled) {
-          setReportError(error instanceof Error ? error.message : 'The report could not be generated.');
+          setReportError(
+            error instanceof Error ? error.message : 'The report could not be generated.',
+          );
         }
       } finally {
         if (!cancelled) setIsGeneratingReport(false);
@@ -324,7 +381,13 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
     <main className="agent-page">
       <nav className="agent-top">
         <Link className="app-brand-logo" href="/" aria-label="Common Ground Creative home">
-          <Image src="/brand/common-ground-creative-logo-orange.png" alt="Common Ground Creative" width={1774} height={887} priority />
+          <Image
+            src="/brand/common-ground-creative-logo-orange.png"
+            alt="Common Ground Creative"
+            width={1774}
+            height={887}
+            priority
+          />
         </Link>
         <span className="agent-status">
           <b /> BRIEFING AGENT ONLINE
@@ -577,13 +640,22 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                     <div>
                       <p className="message-label">COMMON GROUND / REPORT GENERATING</p>
                       <h3>Building your market-entry readout</h3>
-                      <p>Maya&apos;s conversation, your brief and the market signals are being organised into a structured report.</p>
-                      <div className="report-loading-track" aria-hidden="true"><i /></div>
+                      <p>
+                        Maya&apos;s conversation, your brief and the market signals are being
+                        organised into a structured report.
+                      </p>
+                      <div className="report-loading-track" aria-hidden="true">
+                        <i />
+                      </div>
                     </div>
                   </div>
                 )}
                 {report && <DemoMarketReport report={report} />}
-                {reportError && <p className="upload-error" role="alert">{reportError}</p>}
+                {reportError && (
+                  <p className="upload-error" role="alert">
+                    {reportError}
+                  </p>
+                )}
                 <div className="summary-actions">
                   <Link className="continue-call" href="/call">
                     <PhoneIcon /> Continue conversation
@@ -598,7 +670,8 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                   </button>
                 </div>
                 <p className="upload-note">
-                  Your report is structured from the submitted brief and Maya&apos;s call transcript. Review recommendations before treating them as final market evidence.
+                  Your report is structured from the submitted brief and Maya&apos;s call
+                  transcript. Review recommendations before treating them as final market evidence.
                 </p>
               </div>
             )}
