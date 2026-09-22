@@ -2,10 +2,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const steps = [
-  ['01', 'Quick Input', 'Add your website, product and market goal.'],
-  ['02', 'AI Snapshot', 'Reveal local opportunities and audience signals.'],
-  ['03', 'AI Consultant', 'Answer only the follow-up questions that matter.'],
-  ['04', 'Final Report', 'Receive a structured plan your team can execute.'],
+  ['01', 'Smart Input', 'Start with what you already have.', 'Add your website or product brief. AI understands your business and market-entry goals without a lengthy questionnaire.'],
+  ['02', 'Market Snapshot', 'Understand your Australian opportunity.', 'Get instant AI insights on market potential, customers, competitors, localisation gaps and key challenges.'],
+  ['03', 'AI Strategy Builder', 'Build a locally relevant strategy.', 'Talk with AI to refine your goals, strategy and budget — while identifying local talent, SMEs and community opportunities.'],
+  ['04', 'Actionable Plan', 'Turn insight into real market action.', 'Receive an Australia-ready marketing and local impact plan, then move into campaign execution with local expert support.'],
 ];
 
 const marqueeLogos = [
@@ -75,10 +75,11 @@ export default function Home() {
           <h2>A direct path from input to<br />action.</h2>
         </header>
         <div className="arc-step-grid">
-          {steps.map(([number, title, description]) => (
+          {steps.map(([number, title, lead, description]) => (
             <article key={number}>
               <span>{number}</span>
               <h3>{title}</h3>
+              <strong>{lead}</strong>
               <p>{description}</p>
             </article>
           ))}
