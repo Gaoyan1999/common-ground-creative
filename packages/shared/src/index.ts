@@ -18,16 +18,25 @@ export const marketAnalysisSchema = z.object({
 export type MarketAnalysis = z.infer<typeof marketAnalysisSchema>;
 
 const reportText = (max: number) => z.string().min(1).max(max);
+const reportComparisonSchema = z.object({
+  brand: reportText(80),
+  approach: reportText(160),
+  implication: reportText(160),
+});
+const reportSectionSchema = z.object({
+  summary: reportText(420),
+  comparisons: z.array(reportComparisonSchema).min(2).max(3),
+});
 
 export const marketEntryReportSchema = z.object({
   brandName: reportText(80),
   reportTitle: reportText(100),
-  business: reportText(320),
-  market: reportText(320),
-  customers: reportText(320),
-  strategy: reportText(320),
-  budget: reportText(320),
-  campaign: reportText(320),
+  business: reportSectionSchema,
+  market: reportSectionSchema,
+  customers: reportSectionSchema,
+  strategy: reportSectionSchema,
+  budget: reportSectionSchema,
+  campaign: reportSectionSchema,
 });
 
 export type MarketEntryReport = z.infer<typeof marketEntryReportSchema>;
