@@ -15,6 +15,7 @@ type Transcript = {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 const MAYA_CONTEXT_STORAGE_KEY = 'common-ground:maya-context';
+const MAYA_TRANSCRIPT_STORAGE_KEY = 'common-ground:maya-transcript';
 
 const statusCopy: Record<CallStatus, string> = {
   ready: 'Ready when you are',
@@ -42,6 +43,20 @@ function getMayaContext() {
     return window.sessionStorage.getItem(MAYA_CONTEXT_STORAGE_KEY)?.slice(0, 1_100) ?? '';
   } catch {
     return '';
+  }
+}
+
+function saveMayaTranscript(transcript: Transcript[]) {
+  const compactTranscript = transcript
+    .filter((line) => line.text.trim())
+    .map((line) => `${line.speaker}: ${line.text.replace(/\s+/g, ' ').trim()}`)
+    .join('\n')
+    .slice(0, 8_000);
+
+  try {
+    if (compactTranscript) window.sessionStorage.setItem(MAYA_TRANSCRIPT_STORAGE_KEY, compactTranscript);
+  } catch {
+    // The report can still be generated from pre-call context if browser storage is unavailable.
   }
 }
 
@@ -180,6 +195,7 @@ ${mayaContext}` : 'No pre-call brand background is available. Start with the mos
   };
 
   const finishCall = () => {
+    saveMayaTranscript(transcript);
     stopCall();
     router.push('/agent?stage=summary');
   };
