@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChangeEvent, useState } from 'react';
-import type { MarketAnalysis } from '@common-ground/shared';
+import { ChangeEvent, useEffect, useState } from 'react';
+import type { MarketAnalysis, MarketEntryReport } from '@common-ground/shared';
 
-type Stage = 'upload' | 'signal' | 'summary' | 'report';
+type Stage = 'upload' | 'signal' | 'summary';
 type BriefContext = {
   brand: string;
   role: string;
@@ -70,6 +70,43 @@ function SelectField({
   );
 }
 
+const MAYA_CONTEXT_STORAGE_KEY = 'common-ground:maya-context';
+const MAYA_TRANSCRIPT_STORAGE_KEY = 'common-ground:maya-transcript';
+
+function compactContext(value: string, limit: number) {
+  const cleanValue = value.replace(/\s+/g, ' ').trim();
+  return cleanValue.length > limit ? `${cleanValue.slice(0, limit - 1).trim()}…` : cleanValue;
+}
+
+function saveMayaCallContext(briefContext: BriefContext, analysis: MarketAnalysis | null) {
+  const context = [
+    briefContext.brand && `Brand: ${compactContext(briefContext.brand, 80)}`,
+    briefContext.businessType && `Business: ${briefContext.businessType}`,
+    briefContext.monthlyRevenue && `Revenue range: ${briefContext.monthlyRevenue}`,
+    briefContext.goals && `Stated goal: ${compactContext(briefContext.goals, 220)}`,
+    analysis?.summary && `Initial analysis: ${compactContext(analysis.summary, 360)}`,
+    analysis?.productFit && `Product fit: ${compactContext(analysis.productFit, 120)}`,
+    analysis?.primaryAudience && `Likely audience: ${compactContext(analysis.primaryAudience, 120)}`,
+    analysis?.openingChannel && `Potential opening channel: ${compactContext(analysis.openingChannel, 120)}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  try {
+    if (context) window.sessionStorage.setItem(MAYA_CONTEXT_STORAGE_KEY, context.slice(0, 1_100));
+  } catch {
+    // The call can still start if browser storage is unavailable.
+  }
+}
+
+function getStoredValue(key: string) {
+  try {
+    return window.sessionStorage.getItem(key) ?? '';
+  } catch {
+    return '';
+  }
+}
+
 function PhoneIcon() {
   return (
     <svg className="button-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -103,12 +140,88 @@ function AnalysisIcon() {
   );
 }
 
+function DemoMarketReport({ report }: { report: MarketEntryReport }) {
+  return (
+    <article className="market-report" aria-label="Demo Australian market-entry report">
+      <section className="report-page report-page--cover">
+        <header className="report-header">
+          <span className="report-brand">COMMON<br />GROUND<br />CREATIVE</span>
+          <span>AUSTRALIAN MARKET ENTRY REPORT</span>
+          <b>DEMO</b>
+        </header>
+        <div className="report-cover-copy">
+          <p>SYDNEY / AUSTRALIA / SEPTEMBER 2026</p>
+          <h3>{report.brandName}<br /><em>{report.reportTitle}</em></h3>
+          <p className="report-lead">
+            {report.executiveSummary}
+          </p>
+        </div>
+        <div className="report-kpis">
+          <div><span>PRIMARY AUDIENCE</span><b>Priority</b><small>{report.primaryAudience}</small></div>
+          <div><span>OPENING MARKET</span><b>Australia</b><small>validate local fit before scale</small></div>
+          <div><span>TEST WINDOW</span><b>90 days</b><small>focused learning period</small></div>
+        </div>
+        <footer>Prepared for demo purposes · Common Ground Creative</footer>
+      </section>
+
+      <section className="report-page">
+        <header className="report-header">
+          <span className="report-brand">COMMON<br />GROUND<br />CREATIVE</span>
+          <span>01 / OPPORTUNITY &amp; AUDIENCE</span>
+          <b>01</b>
+        </header>
+        <div className="report-section-heading">
+          <p>EXECUTIVE SUMMARY</p>
+          <h3>{report.opportunityHeadline}</h3>
+          <p>
+            {report.marketOpportunity}
+          </p>
+        </div>
+        <div className="report-insight-grid">
+          <article><span>01 / POSITIONING</span><h4>{report.positioning}</h4><p>Use this as the clearest local entry point across the product story, creator brief and landing page.</p></article>
+          <article><span>02 / CUSTOMER</span><h4>{report.primaryAudience}</h4><p>Prioritise the customer tension and decision trigger over broad demographic reach.</p></article>
+          <article><span>03 / COMMERCIAL SIGNAL</span><h4>{report.commercialSignal}</h4><p>Use the first market test to validate this commercial assumption before expanding investment.</p></article>
+        </div>
+        <div className="report-callout"><span>RECOMMENDATION</span><p>{report.recommendation}</p></div>
+        <footer>Solace Skin demo report · Page 2 of 3</footer>
+      </section>
+
+      <section className="report-page">
+        <header className="report-header">
+          <span className="report-brand">COMMON<br />GROUND<br />CREATIVE</span>
+          <span>02 / GO-TO-MARKET PLAN</span>
+          <b>02</b>
+        </header>
+        <div className="report-section-heading report-section-heading--compact">
+          <p>CHANNEL &amp; ACTIVATION</p>
+          <h3>Build proof in public,<br /><em>then buy scale.</em></h3>
+        </div>
+        <div className="report-table" role="table" aria-label="90-day launch plan">
+          <div className="report-table-row report-table-head" role="row"><span>PHASE</span><span>FOCUS</span><span>SUCCESS SIGNAL</span></div>
+          {report.ninetyDayPlan.map((step) => (
+            <div className="report-table-row" role="row" key={step.phase}><span>{step.phase}</span><span>{step.focus}</span><span>{step.successSignal}</span></div>
+          ))}
+        </div>
+        <div className="report-bottom-grid">
+          <div><span>CHANNEL PRIORITY</span><ol>{report.channelPriorities.map((item) => <li key={item.channel}><b>{item.channel}</b> - {item.rationale}</li>)}</ol></div>
+          <div><span>WATCHOUTS</span><p>{report.watchouts.join(' ')}</p></div>
+        </div>
+        <div className="report-callout"><span>NEXT DECISION</span><p>{report.nextDecision}</p></div>
+        <footer>Solace Skin demo report · Page 3 of 3</footer>
+      </section>
+    </article>
+  );
+}
+
 export default function AgentWorkspace({ initialStage }: { initialStage: 'upload' | 'summary' }) {
   const [stage, setStage] = useState<Stage>(initialStage);
   const [fileName, setFileName] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [isAnalysing, setIsAnalysing] = useState(false);
   const [analysis, setAnalysis] = useState<MarketAnalysis | null>(null);
+  const [report, setReport] = useState<MarketEntryReport | null>(null);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(initialStage === 'summary');
+  const [reportError, setReportError] = useState('');
   const [analysisError, setAnalysisError] = useState('');
   const [openSelect, setOpenSelect] = useState<SelectName | null>(null);
   const [briefContext, setBriefContext] = useState<BriefContext>({
@@ -119,7 +232,48 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
     monthlyRevenue: '',
     goals: '',
   });
-  const progress = stage === 'upload' ? 1 : stage === 'signal' ? 2 : stage === 'summary' ? 3 : 4;
+  const progress = stage === 'upload' ? 1 : stage === 'signal' ? 2 : 4;
+  useEffect(() => {
+    if (initialStage !== 'summary') return;
+
+    const background = getStoredValue(MAYA_CONTEXT_STORAGE_KEY);
+    const transcript = getStoredValue(MAYA_TRANSCRIPT_STORAGE_KEY);
+    if (!background && !transcript) {
+      setIsGeneratingReport(false);
+      setReportError('Start with company context and a Maya conversation to generate your report.');
+      return;
+    }
+
+    let cancelled = false;
+    async function generateReport() {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/report/generate`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ background, transcript }),
+          },
+        );
+        const result = (await response.json()) as MarketEntryReport | { message?: string };
+        if (!response.ok || !('executiveSummary' in result)) {
+          throw new Error('message' in result ? result.message : 'The report could not be generated.');
+        }
+        if (!cancelled) setReport(result);
+      } catch (error) {
+        if (!cancelled) {
+          setReportError(error instanceof Error ? error.message : 'The report could not be generated.');
+        }
+      } finally {
+        if (!cancelled) setIsGeneratingReport(false);
+      }
+    }
+    void generateReport();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialStage]);
   function selectFile(event: ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
@@ -156,6 +310,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
       if (!response.ok || !('summary' in result)) {
         throw new Error('message' in result ? result.message : 'Analysis could not be completed.');
       }
+      saveMayaCallContext(briefContext, result);
       setAnalysis(result);
       setStage('signal');
     } catch (error) {
@@ -179,11 +334,11 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
         <aside className="agent-aside">
           <p className="eyebrow">AU MARKET ENTRY / 0{progress}</p>
           <h1>
-            {stage === 'summary' || stage === 'report' ? (
+            {stage === 'summary' ? (
               <>
-                Your local
+                Your market-entry
                 <br />
-                <em>story, clarified.</em>
+                <em>readout.</em>
               </>
             ) : (
               <>
@@ -194,8 +349,8 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
             )}
           </h1>
           <p>
-            {stage === 'summary' || stage === 'report'
-              ? 'Your company context and discussion with Maya are now one clear market-entry narrative.'
+            {stage === 'summary'
+              ? 'Your company context and discussion with Maya are now organised into a concise launch brief.'
               : "Share whatever company context you have. We'll use it to create a first local read before your market-entry conversation."}
           </p>
           <div className="mini-process">
@@ -205,7 +360,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
             <div className={progress === 2 ? 'is-current' : ''}>
               <strong>2</strong> Market signal
             </div>
-            <div className={progress === 3 ? 'is-current' : ''}>
+            <div>
               <strong>3</strong> Expert call
             </div>
             <div className={progress === 4 ? 'is-current' : ''}>
@@ -379,7 +534,11 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                   </div>
                   <p>{analysis?.marketOpportunity}</p>
                   <div className="brief-card-actions">
-                    <Link href="/call" className="dark-button">
+                    <Link
+                      href="/call"
+                      className="dark-button"
+                      onClick={() => saveMayaCallContext(briefContext, analysis)}
+                    >
                       Discuss this with Maya ↗
                     </Link>
                     <button className="outline-button" onClick={() => setStage('upload')}>
@@ -398,71 +557,6 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
             )}
             {stage === 'summary' && (
               <div className="summary-workspace">
-                <p className="message-label">STEP 03 / CALL SUMMARY</p>
-                <h2>
-                  Your call, turned into
-                  <br />
-                  <em>clear next moves.</em>
-                </h2>
-                <p className="summary-intro">
-                  You and Maya explored how your barrier-care proposition can translate for
-                  Australian buyers: lead with clinical proof, launch around one hero product, and
-                  validate the message with creators before scaling paid media.
-                </p>
-                <article className="summary-card">
-                  <div className="summary-card-head">
-                    <span>AI CALL SYNTHESIS</span>
-                    <b>CONTEXT COMPLETE</b>
-                  </div>
-                  <div className="summary-point">
-                    <span>01</span>
-                    <div>
-                      <h3>Positioning to lead with</h3>
-                      <p>
-                        Barrier-care efficacy that feels simple enough for everyday Australian
-                        routines — grounded in clinical proof, not skincare jargon.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="summary-point">
-                    <span>02</span>
-                    <div>
-                      <h3>Launch focus</h3>
-                      <p>
-                        Open with one hero product and creator-led education. Keep the first market
-                        test focused before widening the range.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="summary-point">
-                    <span>03</span>
-                    <div>
-                      <h3>First channel mix</h3>
-                      <p>
-                        Use Meta for high-intent learning, supported by selective creator seeding to
-                        build the local proof your audience needs.
-                      </p>
-                    </div>
-                  </div>
-                </article>
-                <div className="summary-actions">
-                  <Link className="continue-call" href="/call">
-                    <PhoneIcon /> Continue conversation
-                  </Link>
-                  <button
-                    className="analyse-button generate-report"
-                    onClick={() => setStage('report')}
-                  >
-                    <AnalysisIcon /> Preview business analysis
-                  </button>
-                </div>
-                <p className="upload-note">
-                  You can keep refining the conversation before generating a final PDF report.
-                </p>
-              </div>
-            )}
-            {stage === 'report' && (
-              <div className="summary-workspace">
                 <p className="message-label">STEP 04 / REPORT READY</p>
                 <h2>
                   Your market-entry
@@ -470,31 +564,42 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                   <em>report is ready.</em>
                 </h2>
                 <p className="summary-intro">
-                  A concise starting point for your team and a useful brief for the marketing
-                  specialist who will review your launch.
+                  A concise, decision-ready starting point for your team and the marketing
+                  specialist who will shape your Australian launch.
                 </p>
-                <article className="agent-report-preview">
-                  <div className="report-side">
-                    COMMON
-                    <br />
-                    GROUND
-                    <br />
-                    CREATIVE
+                {isGeneratingReport && (
+                  <div className="report-loading" role="status" aria-live="polite">
+                    <div className="report-loading-mark" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                    <div>
+                      <p className="message-label">COMMON GROUND / REPORT GENERATING</p>
+                      <h3>Building your market-entry readout</h3>
+                      <p>Maya&apos;s conversation, your brief and the market signals are being organised into a structured report.</p>
+                      <div className="report-loading-track" aria-hidden="true"><i /></div>
+                    </div>
                   </div>
-                  <div>
-                    <span>AUSTRALIAN MARKET ENTRY REPORT</span>
-                    <h3>
-                      Barrier care,
-                      <br />
-                      made local.
-                    </h3>
-                    <p>Company context · Market signal · Call summary</p>
-                  </div>
-                  <b>PDF</b>
-                </article>
-                <button className="analyse-button generate-report" onClick={() => window.print()}>
-                  Download PDF report <span>↓</span>
-                </button>
+                )}
+                {report && <DemoMarketReport report={report} />}
+                {reportError && <p className="upload-error" role="alert">{reportError}</p>}
+                <div className="summary-actions">
+                  <Link className="continue-call" href="/call">
+                    <PhoneIcon /> Continue conversation
+                  </Link>
+                  <button
+                    className="analyse-button generate-report"
+                    type="button"
+                    disabled={!report}
+                    onClick={() => window.print()}
+                  >
+                    <AnalysisIcon /> Export PDF report
+                  </button>
+                </div>
+                <p className="upload-note">
+                  Your report is structured from the submitted brief and Maya&apos;s call transcript. Review recommendations before treating them as final market evidence.
+                </p>
               </div>
             )}
           </div>
