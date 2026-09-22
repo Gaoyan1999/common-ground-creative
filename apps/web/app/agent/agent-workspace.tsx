@@ -14,6 +14,34 @@ type BriefContext = {
   goals: string;
 };
 
+const MAYA_CONTEXT_STORAGE_KEY = 'common-ground:maya-context';
+
+function compactContext(value: string, limit: number) {
+  const cleanValue = value.replace(/\s+/g, ' ').trim();
+  return cleanValue.length > limit ? `${cleanValue.slice(0, limit - 1).trim()}…` : cleanValue;
+}
+
+function saveMayaCallContext(briefContext: BriefContext, analysis: MarketAnalysis | null) {
+  const context = [
+    briefContext.brand && `Brand: ${compactContext(briefContext.brand, 80)}`,
+    briefContext.businessType && `Business: ${briefContext.businessType}`,
+    briefContext.monthlyRevenue && `Revenue range: ${briefContext.monthlyRevenue}`,
+    briefContext.goals && `Stated goal: ${compactContext(briefContext.goals, 220)}`,
+    analysis?.summary && `Initial analysis: ${compactContext(analysis.summary, 360)}`,
+    analysis?.productFit && `Product fit: ${compactContext(analysis.productFit, 120)}`,
+    analysis?.primaryAudience && `Likely audience: ${compactContext(analysis.primaryAudience, 120)}`,
+    analysis?.openingChannel && `Potential opening channel: ${compactContext(analysis.openingChannel, 120)}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  try {
+    if (context) window.sessionStorage.setItem(MAYA_CONTEXT_STORAGE_KEY, context.slice(0, 1_100));
+  } catch {
+    // The call can still start if browser storage is unavailable.
+  }
+}
+
 function PhoneIcon() {
   return (
     <svg className="button-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -175,6 +203,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
       if (!response.ok || !('summary' in result)) {
         throw new Error('message' in result ? result.message : 'Analysis could not be completed.');
       }
+      saveMayaCallContext(briefContext, result);
       setAnalysis(result);
       setStage('signal');
     } catch (error) {
@@ -390,7 +419,11 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                   </div>
                   <p>{analysis?.marketOpportunity}</p>
                   <div className="brief-card-actions">
-                    <Link href="/call" className="dark-button">
+                    <Link
+                      href="/call"
+                      className="dark-button"
+                      onClick={() => saveMayaCallContext(briefContext, analysis)}
+                    >
                       Discuss this with Maya ↗
                     </Link>
                     <button className="outline-button" onClick={() => setStage('upload')}>
