@@ -302,7 +302,13 @@ ${mayaContext}`
               aria-label="Live Maya avatar"
             />
             {!isAvatarVideo && (
-              <Image src="/maya/maya-avatar.png" alt="Maya" fill sizes="240px" priority />
+              <Image
+                src="/maya/maya-avatar.png"
+                alt="Maya"
+                fill
+                sizes="(max-width: 680px) 86vw, 70vw"
+                priority
+              />
             )}
           </div>
           <h1 className="caller-name">Maya</h1>
