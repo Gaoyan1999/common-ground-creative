@@ -7,7 +7,9 @@ import {
   marketEntryReportSchema,
 } from '@common-ground/shared';
 import { fileURLToPath } from 'node:url';
+import { randomUUID } from 'node:crypto';
 import { PDFParse } from 'pdf-parse';
+import { AccessToken, AgentDispatchClient } from 'livekit-server-sdk';
 
 try {
   process.loadEnvFile(fileURLToPath(new URL('../../../.env', import.meta.url)));
@@ -34,6 +36,22 @@ const realtimeEndpoint = () => {
 };
 const maxDocumentCharacters = 30_000;
 const maxReportContextCharacters = 8_000;
+const avatarAgentName = process.env.LIVEKIT_AGENT_NAME ?? 'common-ground-maya';
+
+function livekitConfiguration() {
+  const url = process.env.LIVEKIT_URL;
+  const apiKey = process.env.LIVEKIT_API_KEY;
+  const apiSecret = process.env.LIVEKIT_API_SECRET;
+  if (
+    !url ||
+    !apiKey ||
+    !apiSecret ||
+    process.env.SYNTHESIA_SESSIONS_ENABLED?.toLowerCase() !== 'true'
+  ) {
+    return null;
+  }
+  return { url, apiKey, apiSecret };
+}
 const mockMarketAnalysis = marketAnalysisSchema.parse({
   summary:
     'A considered consumer brand with a clear product story and a credible starting point for an Australian market-entry conversation.',
@@ -168,6 +186,39 @@ app.get('/health', async () =>
     timestamp: new Date().toISOString(),
   }),
 );
+
+app.post('/avatar/session', async (_request, reply) => {
+  const config = livekitConfiguration();
+  if (!config) {
+    return reply.code(503).send({
+      message:
+        'Synthesia avatar sessions are not configured. Set the LiveKit credentials and SYNTHESIA_SESSIONS_ENABLED=true.',
+    });
+  }
+
+  const roomName = `maya-${randomUUID()}`;
+  const token = new AccessToken(config.apiKey, config.apiSecret, {
+    identity: `guest-${randomUUID()}`,
+    name: 'Common Ground guest',
+    ttl: '15m',
+  });
+  token.addGrant({ room: roomName, roomJoin: true, canPublish: true, canSubscribe: true });
+
+  try {
+    await new AgentDispatchClient(
+      config.url.replace(/^wss:/, 'https:'),
+      config.apiKey,
+      config.apiSecret,
+    ).createDispatch(roomName, avatarAgentName);
+  } catch (error) {
+    app.log.error(error, 'LiveKit agent dispatch failed');
+    return reply.code(503).send({
+      message: 'The Maya avatar worker is unavailable. Start the LiveKit agent and try again.',
+    });
+  }
+
+  return { url: config.url, token: await token.toJwt() };
+});
 
 app.post('/realtime/offer', async (request, reply) => {
   const apiKey = process.env.DASHSCOPE_API_KEY;

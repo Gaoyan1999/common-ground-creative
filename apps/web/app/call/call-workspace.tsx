@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Room, RoomEvent, Track } from 'livekit-client';
 import './call.css';
 
 type CallStatus = 'ready' | 'connecting' | 'listening' | 'thinking' | 'speaking' | 'error';
@@ -13,7 +14,8 @@ type Transcript = {
   text: string;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+// Use IPv4 locally so a second dev server bound to IPv6 cannot intercept API calls.
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001';
 const MAYA_CONTEXT_STORAGE_KEY = 'common-ground:maya-context';
 const MAYA_TRANSCRIPT_STORAGE_KEY = 'common-ground:maya-transcript';
 
@@ -71,6 +73,9 @@ export default function CallWorkspace() {
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<number | null>(null);
   const outputAudioRef = useRef<HTMLAudioElement | null>(null);
+  const avatarRoomRef = useRef<Room | null>(null);
+  const avatarVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [isAvatarVideo, setIsAvatarVideo] = useState(false);
 
   const stopCall = () => {
     connectionRef.current?.close();
@@ -80,6 +85,10 @@ export default function CallWorkspace() {
     if (timerRef.current) window.clearInterval(timerRef.current);
     timerRef.current = null;
     if (outputAudioRef.current) outputAudioRef.current.srcObject = null;
+    avatarRoomRef.current?.disconnect();
+    avatarRoomRef.current = null;
+    if (avatarVideoRef.current) avatarVideoRef.current.srcObject = null;
+    setIsAvatarVideo(false);
   };
 
   useEffect(() => stopCall, []);
@@ -121,6 +130,43 @@ export default function CallWorkspace() {
     const mayaContext = getMayaContext();
 
     try {
+      const avatarResponse = await fetch(`${API_URL}/avatar/session`, { method: 'POST' });
+      if (avatarResponse.ok) {
+        const session = (await avatarResponse.json()) as { url: string; token: string };
+        const avatarRoom = new Room();
+        avatarRoomRef.current = avatarRoom;
+        avatarRoom.on(RoomEvent.TrackSubscribed, (track) => {
+          if (track.kind === Track.Kind.Video && avatarVideoRef.current) {
+            track.attach(avatarVideoRef.current);
+            setIsAvatarVideo(true);
+          }
+          if (track.kind === Track.Kind.Audio && outputAudioRef.current) {
+            track.attach(outputAudioRef.current);
+            void outputAudioRef.current.play().catch(() => undefined);
+          }
+        });
+        avatarRoom.on(RoomEvent.Disconnected, () => {
+          setIsAvatarVideo(false);
+          setStatus('error');
+          setError('The Maya avatar session ended. You can reconnect.');
+        });
+        await avatarRoom.connect(session.url, session.token);
+        await avatarRoom.localParticipant.setMicrophoneEnabled(true);
+        setStatus('listening');
+        timerRef.current = window.setInterval(
+          () => setElapsedSeconds((seconds) => seconds + 1),
+          1000,
+        );
+        return;
+      }
+
+      const avatarError = await avatarResponse.json().catch(() => null) as {
+        message?: string;
+      } | null;
+      if (!avatarError?.message?.includes('not configured')) {
+        throw new Error(avatarError?.message ?? 'Maya avatar could not start.');
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
@@ -198,12 +244,10 @@ ${mayaContext}`
       });
       if (!response.ok) throw new Error(await response.text());
       await connection.setRemoteDescription({ type: 'answer', sdp: await response.text() });
-    } catch {
+    } catch (startError) {
       stopCall();
       setStatus('error');
-      setError(
-        'We could not start Maya. Check microphone access and that Qwen Realtime is enabled.',
-      );
+      setError(startError instanceof Error ? startError.message : 'We could not start Maya.');
     }
   };
 
@@ -237,7 +281,16 @@ ${mayaContext}`
         <div className="call-top">
           <p className="eyebrow">MARKET ENTRY SESSION</p>
           <div className="caller" aria-label={statusCopy[status]}>
-            <Image src="/maya/maya-avatar.png" alt="Maya" fill sizes="176px" priority />
+            <video
+              ref={avatarVideoRef}
+              className={isAvatarVideo ? 'caller-video is-visible' : 'caller-video'}
+              autoPlay
+              playsInline
+              aria-label="Live Maya avatar"
+            />
+            {!isAvatarVideo && (
+              <Image src="/maya/maya-avatar.png" alt="Maya" fill sizes="176px" priority />
+            )}
           </div>
           <h1 className="caller-name">Maya</h1>
           <p className="caller-role">Australian Marketing Specialist</p>

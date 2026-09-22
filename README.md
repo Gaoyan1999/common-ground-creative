@@ -30,6 +30,17 @@ the document-analysis endpoint only; it does not disable or change the realtime 
 
 Create an API key in the [Synthesia developer settings](https://app.synthesia.io/#/developers/api-keys), then add it to `SYNTHESIA_API_KEY` in your local `.env`. Set `SYNTHESIA_AVATAR_ID` once the avatar has been selected, and enable `SYNTHESIA_SESSIONS_ENABLED` when the Interactive Avatar session integration is ready. Do not expose the API key through `NEXT_PUBLIC_` variables or commit it to the repository.
 
+The live avatar worker uses Qwen for dialogue, LiveKit Inference for speech, and Synthesia for video. After filling in the LiveKit credentials, set `SYNTHESIA_SESSIONS_ENABLED=true` and run it in a separate terminal:
+
+```bash
+cd apps/avatar-agent
+# Requires Python 3.10 or newer.
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python agent.py dev
+```
+
 ## Commands
 
 ```bash
