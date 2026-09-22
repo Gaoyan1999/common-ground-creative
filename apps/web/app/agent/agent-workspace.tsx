@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ChangeEvent, useEffect, useState } from 'react';
 import type { MarketAnalysis, MarketEntryReport } from '@common-ground/shared';
 
@@ -13,6 +14,61 @@ type BriefContext = {
   monthlyRevenue: string;
   goals: string;
 };
+type SelectName = 'businessType' | 'monthlyRevenue';
+type SelectOption = { value: string; label: string };
+
+function SelectField({
+  label,
+  value,
+  placeholder,
+  options,
+  isOpen,
+  onToggle,
+  onChoose,
+}: {
+  label: string;
+  value: string;
+  placeholder: string;
+  options: SelectOption[];
+  isOpen: boolean;
+  onToggle: () => void;
+  onChoose: (value: string) => void;
+}) {
+  const selectedLabel = options.find((option) => option.value === value)?.label;
+
+  return (
+    <div className="field-group">
+      <span className="field-label">{label}</span>
+      <div className={`custom-select ${isOpen ? 'is-open' : ''}`}>
+        <button
+          className="custom-select-trigger"
+          type="button"
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+          onClick={onToggle}
+        >
+          <span>{selectedLabel ?? placeholder}</span>
+          <i aria-hidden="true">⌄</i>
+        </button>
+        {isOpen && (
+          <div className="custom-select-options" role="listbox" aria-label={label}>
+            {options.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={value === option.value}
+                onClick={() => onChoose(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 const MAYA_CONTEXT_STORAGE_KEY = 'common-ground:maya-context';
 const MAYA_TRANSCRIPT_STORAGE_KEY = 'common-ground:maya-transcript';
@@ -167,6 +223,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
   const [isGeneratingReport, setIsGeneratingReport] = useState(initialStage === 'summary');
   const [reportError, setReportError] = useState('');
   const [analysisError, setAnalysisError] = useState('');
+  const [openSelect, setOpenSelect] = useState<SelectName | null>(null);
   const [briefContext, setBriefContext] = useState<BriefContext>({
     brand: '',
     role: '',
@@ -266,12 +323,8 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
   return (
     <main className="agent-page">
       <nav className="agent-top">
-        <Link className="wordmark" href="/">
-          COMMON<span>GROUND</span>
-          <i>®</i>
-        </Link>
-        <Link className="back-link" href="/">
-          ← HOME
+        <Link className="app-brand-logo" href="/" aria-label="Common Ground Creative home">
+          <Image src="/brand/common-ground-creative-logo-orange.png" alt="Common Ground Creative" width={1774} height={887} priority />
         </Link>
         <span className="agent-status">
           <b /> BRIEFING AGENT ONLINE
@@ -298,7 +351,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
           <p>
             {stage === 'summary'
               ? 'Your company context and discussion with Maya are now organised into a concise launch brief.'
-              : 'Share whatever company context you have. We&apos;ll use it to create a first local read before your market-entry conversation.'}
+              : "Share whatever company context you have. We'll use it to create a first local read before your market-entry conversation."}
           </p>
           <div className="mini-process">
             <div className={progress === 1 ? 'is-current' : ''}>
@@ -364,38 +417,50 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                       />
                     </label>
                     <div className="brief-form-grid">
-                      <label>
-                        Business type
-                        <select
-                          value={briefContext.businessType}
-                          onChange={(event) =>
-                            updateBriefContext('businessType', event.target.value)
-                          }
-                        >
-                          <option value="">Select one</option>
-                          <option>DTC / Ecommerce</option>
-                          <option>Marketplace brand</option>
-                          <option>Retail brand</option>
-                          <option>Service business</option>
-                          <option>Other</option>
-                        </select>
-                      </label>
-                      <label>
-                        Monthly revenue
-                        <select
-                          value={briefContext.monthlyRevenue}
-                          onChange={(event) =>
-                            updateBriefContext('monthlyRevenue', event.target.value)
-                          }
-                        >
-                          <option value="">Select a range</option>
-                          <option>Pre-revenue</option>
-                          <option>Under A$25k</option>
-                          <option>A$25k–A$100k</option>
-                          <option>A$100k–A$500k</option>
-                          <option>Over A$500k</option>
-                        </select>
-                      </label>
+                      <SelectField
+                        label="Business type"
+                        value={briefContext.businessType}
+                        placeholder="Select one"
+                        isOpen={openSelect === 'businessType'}
+                        onToggle={() =>
+                          setOpenSelect((current) =>
+                            current === 'businessType' ? null : 'businessType',
+                          )
+                        }
+                        onChoose={(value) => {
+                          updateBriefContext('businessType', value);
+                          setOpenSelect(null);
+                        }}
+                        options={[
+                          { value: 'DTC / Ecommerce', label: 'DTC / Ecommerce' },
+                          { value: 'Marketplace brand', label: 'Marketplace brand' },
+                          { value: 'Retail brand', label: 'Retail brand' },
+                          { value: 'Service business', label: 'Service business' },
+                          { value: 'Other', label: 'Other' },
+                        ]}
+                      />
+                      <SelectField
+                        label="Monthly revenue"
+                        value={briefContext.monthlyRevenue}
+                        placeholder="Select a range"
+                        isOpen={openSelect === 'monthlyRevenue'}
+                        onToggle={() =>
+                          setOpenSelect((current) =>
+                            current === 'monthlyRevenue' ? null : 'monthlyRevenue',
+                          )
+                        }
+                        onChoose={(value) => {
+                          updateBriefContext('monthlyRevenue', value);
+                          setOpenSelect(null);
+                        }}
+                        options={[
+                          { value: 'Pre-revenue', label: 'Pre-revenue' },
+                          { value: 'Under A$25k', label: 'Under A$25k' },
+                          { value: 'A$25k–A$100k', label: 'A$25k–A$100k' },
+                          { value: 'A$100k–A$500k', label: 'A$100k–A$500k' },
+                          { value: 'Over A$500k', label: 'Over A$500k' },
+                        ]}
+                      />
                     </div>
                     <label>
                       What are you looking to achieve?
