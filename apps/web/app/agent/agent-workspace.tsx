@@ -235,7 +235,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
     async function generateReport() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001'}/report/generate`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/report/generate`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -294,7 +294,7 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
       if (context) body.append('briefContext', context);
       if (file) body.append('document', file);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001'}/brief/analyse`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/brief/analyse`,
         { method: 'POST', body },
       );
       const result = (await response.json()) as MarketAnalysis | { message?: string };
