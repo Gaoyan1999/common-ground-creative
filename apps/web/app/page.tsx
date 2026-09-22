@@ -54,6 +54,16 @@ export default function Home() {
         </aside>
       </section>
 
+      <section className="arc-marquee" id="solutions" aria-labelledby="plan-covers-heading">
+        <h2 id="plan-covers-heading">What your plan covers</h2>
+        <div className="scroller" data-animated="true" data-speed="slow">
+          <ul className="tag-list scroller__inner">
+            {marqueeItems.map((item) => <li key={item}>{item}</li>)}
+            {marqueeItems.map((item) => <li key={`${item}-duplicate`} aria-hidden="true">{item}</li>)}
+          </ul>
+        </div>
+      </section>
+
       <section className="arc-process" id="how-it-works">
         <header>
           <p className="arc-kicker">HOW IT WORKS</p>
@@ -67,16 +77,6 @@ export default function Home() {
               <p>{description}</p>
             </article>
           ))}
-        </div>
-      </section>
-
-      <section className="arc-marquee" id="solutions" aria-label="What your market brief covers">
-        <p className="arc-kicker">WHAT YOUR PLAN COVERS</p>
-        <div className="scroller" data-animated="true" data-speed="slow">
-          <ul className="tag-list scroller__inner">
-            {marqueeItems.map((item) => <li key={item}>{item}</li>)}
-            {marqueeItems.map((item) => <li key={`${item}-duplicate`} aria-hidden="true">{item}</li>)}
-          </ul>
         </div>
       </section>
 
