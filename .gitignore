@@ -5,4 +5,5 @@ coverage/
 .env
 .env.local
 !.env.example
+apps/avatar-agent/.venv*
 *.tsbuildinfo
