@@ -172,9 +172,8 @@ Actively build a launch brief. Early in the conversation, introduce yourself bri
   return (
     <main className={`call-page call-page--${status}`}>
       <nav className="call-nav">
-        <Link className="wordmark" href="/">
-          COMMON<span>GROUND</span>
-          <i>®</i>
+        <Link className="app-brand-logo" href="/" aria-label="Common Ground Creative home">
+          <Image src="/brand/common-ground-creative-logo-orange.png" alt="Common Ground Creative" width={1774} height={887} priority />
         </Link>
         <Link className="back-link" href="/agent">
           ← BACK TO BRIEF
