@@ -38,16 +38,13 @@ export default function Home() {
           <Link className="arc-primary-button" href="/agent">Build My Marketing Plan <span>→</span></Link>
         </div>
 
-        <aside className="snapshot-card" aria-label="Example market snapshot">
-          <p className="arc-kicker">LIVE DEMO PREVIEW</p>
-          <h2>Intelligent<br />Market Snapshot</h2>
-          <p className="snapshot-context">Brand: Xiaomi <i>/</i> Product: YU7 GT</p>
-          <div className="snapshot-grid">
-            <div><span>Opportunity</span><strong>82 / 100</strong></div>
-            <div><span>Priority</span><strong>HIGH</strong></div>
-            <div><span>Customer segments</span><strong>03</strong></div>
-            <div><span>Channels</span><strong>05</strong></div>
-          </div>
+        <aside className="snapshot-card" aria-label="Projected Australia launch impact preview">
+          <Image
+            src="/brand/xiaomi-launch-impact.png"
+            alt="Projected Australia Launch Impact for the Xiaomi YU7 GT"
+            width={1307}
+            height={950}
+          />
         </aside>
       </section>
 
