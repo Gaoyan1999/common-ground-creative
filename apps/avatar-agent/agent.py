@@ -16,7 +16,8 @@ INSTRUCTIONS = (
     "build a practical Australian market-entry plan covering business, market, customers, "
     "strategy, budget, and campaign. Never mention implementation details or markdown."
 )
-DEFAULT_MAYA_VOICE_ID = "a0e99841-438c-4a64-b679-ae501e7d6091"
+# Jacqueline — a confident, young American adult female Cartesia voice.
+DEFAULT_MAYA_VOICE_ID = "9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
 
 
 def prewarm(proc) -> None:
