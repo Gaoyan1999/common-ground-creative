@@ -2057,9 +2057,9 @@ footer p:last-child {
 }
 .arc-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.28fr) minmax(340px, 0.78fr);
+  grid-template-columns: minmax(0, 1fr) minmax(520px, 1fr);
   align-items: center;
-  gap: clamp(3rem, 7vw, 9rem);
+  gap: clamp(2rem, 4vw, 5rem);
   min-height: 690px;
   padding: clamp(7rem, 9vw, 10.6rem) clamp(4.5rem, 5vw, 5.3rem) 5rem;
 }
@@ -2072,8 +2072,7 @@ footer p:last-child {
   text-transform: uppercase;
 }
 .arc-hero h1,
-.arc-process h2,
-.arc-report h2 {
+.arc-process h2 {
   margin: 1.8rem 0 1.65rem;
   color: var(--arc-ink);
   font-size: clamp(4rem, 6.45vw, 6.65rem);
@@ -2111,55 +2110,37 @@ footer p:last-child {
   line-height: 0;
 }
 .snapshot-card {
+  position: relative;
   width: 100%;
-  max-width: 470px;
+  max-width: 700px;
   justify-self: end;
-  padding: 2.7rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 105, 68, 0.34);
   border-radius: 28px;
-  background: rgba(30, 18, 13, 0.96);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+  background: #0b0807;
+  box-shadow:
+    0 30px 72px rgba(0, 0, 0, 0.38),
+    0 0 48px rgba(255, 105, 68, 0.14);
+  line-height: 0;
+  isolation: isolate;
 }
-.snapshot-card h2 {
-  margin: 1.25rem 0 0.9rem;
-  font-size: clamp(2rem, 3vw, 2.7rem);
-  line-height: 0.94;
-  letter-spacing: -0.07em;
+.snapshot-card::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 105, 68, 0.12),
+    transparent 42%,
+    rgba(117, 47, 27, 0.12)
+  );
+  content: '';
+  mix-blend-mode: soft-light;
+  pointer-events: none;
 }
-.snapshot-context {
-  margin: 0;
-  color: var(--arc-text);
-  font-size: 0.87rem;
-}
-.snapshot-context i {
-  padding: 0 0.8rem;
-  font-style: normal;
-  color: var(--arc-accent);
-}
-.snapshot-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.45rem;
-  margin-top: 3rem;
-}
-.snapshot-grid div {
-  min-height: 104px;
-  padding: 1.05rem;
-  border-radius: 17px;
-  background: var(--arc-panel-soft);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.snapshot-grid span {
-  color: var(--arc-text);
-  font-size: 0.63rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-.snapshot-grid strong {
-  color: var(--arc-ink);
-  font-size: 1.4rem;
-  letter-spacing: -0.06em;
+.snapshot-card img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .arc-process {
   padding: 1.3rem clamp(4.5rem, 5vw, 5.3rem) 7.5rem;
@@ -2190,6 +2171,14 @@ footer p:last-child {
   font-size: 1.35rem;
   letter-spacing: -0.045em;
 }
+.arc-step-grid strong {
+  display: block;
+  max-width: 14rem;
+  margin-bottom: 0.55rem;
+  color: var(--arc-ink);
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
 .arc-step-grid p {
   max-width: 14rem;
   margin: 0;
@@ -2198,82 +2187,64 @@ footer p:last-child {
   line-height: 1.25;
 }
 .arc-marquee {
-  padding: 5.5rem 0;
+  display: flex;
+  min-height: 280px;
+  padding: 3.5rem 0;
   border-top: 1px solid var(--arc-border);
   border-bottom: 1px solid var(--arc-border);
   background: rgba(8, 6, 5, 0.72);
+  flex-direction: column;
+  justify-content: center;
   text-align: center;
 }
-.arc-marquee .arc-kicker {
-  margin-bottom: 1.35rem;
+.arc-marquee h2 {
+  margin: 0 1.5rem 2.25rem;
+  color: var(--arc-ink);
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.055em;
 }
 .arc-marquee .scroller {
   width: 100%;
   overflow: hidden;
-  -webkit-mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-  mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 .arc-marquee .scroller__inner {
   display: flex;
   width: max-content;
-  gap: 0.8rem;
+  align-items: center;
+  gap: clamp(4rem, 7vw, 8rem);
   margin: 0;
-  padding: 1rem;
+  padding: 1rem 0;
   list-style: none;
-  animation: arc-scroll 45s linear infinite;
+  animation: arc-scroll 32s linear infinite;
 }
 .arc-marquee .scroller:hover .scroller__inner {
   animation-play-state: paused;
 }
 .arc-marquee .tag-list li {
-  padding: 0.8rem 1.1rem;
-  border: 1px solid var(--arc-border);
-  border-radius: 999px;
-  background: var(--arc-panel);
-  color: var(--arc-ink);
-  font-size: 0.76rem;
-  font-weight: 700;
-  white-space: nowrap;
+  display: flex;
+  width: clamp(9rem, 14vw, 14rem);
+  height: clamp(26px, 2.2vw, 38px);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  align-items: center;
+  justify-content: center;
+}
+.arc-marquee .tag-list img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 @keyframes arc-scroll {
   to {
     transform: translateX(-50%);
   }
-}
-.arc-report {
-  max-width: 62rem;
-  padding: 9rem 1.5rem;
-  margin: auto;
-  text-align: center;
-}
-.arc-report h2 {
-  margin-top: 1.25rem;
-  font-size: clamp(3.2rem, 5vw, 5.5rem);
-}
-.arc-report > p:not(.arc-kicker) {
-  max-width: 39rem;
-  margin: 0 auto;
-  color: var(--arc-text);
-  font-size: 1rem;
-  line-height: 1.5;
-}
-.arc-report .arc-primary-button {
-  margin-top: 2rem;
-}
-.arc-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.7rem clamp(1.5rem, 3.35vw, 3.6rem);
-  border-top: 1px solid var(--arc-border);
-  color: var(--arc-text);
-  font-size: 0.66rem;
-}
-.arc-footer img {
-  display: block;
-  width: 142px;
-  height: auto;
 }
 @media (max-width: 900px) {
   .arc-nav {
@@ -2329,22 +2300,17 @@ footer p:last-child {
     font-size: 0.73rem;
   }
   .snapshot-card {
-    padding: 1.6rem;
     border-radius: 22px;
   }
-  .snapshot-grid {
-    gap: 0.8rem;
-    margin-top: 2rem;
+  .arc-marquee {
+    min-height: 230px;
+    padding: 3rem 0;
   }
-  .snapshot-grid div {
-    min-height: 91px;
-    padding: 0.85rem;
-  }
-  .snapshot-grid strong {
-    font-size: 1.18rem;
+  .arc-marquee h2 {
+    margin-bottom: 1.75rem;
   }
   .arc-process {
-    padding: 1rem 1.25rem 4rem;
+    padding: 4rem 1.25rem;
   }
   .arc-process h2 {
     font-size: clamp(2.5rem, 12vw, 4rem);
@@ -2358,18 +2324,5 @@ footer p:last-child {
   }
   .arc-step-grid h3 {
     margin: 1.15rem 0 0.75rem;
-  }
-  .arc-report {
-    padding: 5rem 1.25rem;
-  }
-  .arc-footer {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.6rem;
-    padding: 1.5rem 1.25rem;
-  }
-  .arc-footer span:last-child {
-    position: absolute;
-    right: 1.25rem;
   }
 }
