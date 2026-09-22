@@ -503,9 +503,18 @@ export default function AgentWorkspace({ initialStage }: { initialStage: 'upload
                   specialist who will shape your Australian launch.
                 </p>
                 {isGeneratingReport && (
-                  <div className="message assistant-message">
-                    <p className="message-label">COMMON GROUND / REPORT GENERATING</p>
-                    <p>Maya&apos;s conversation and your brief are being turned into a structured market-entry report.</p>
+                  <div className="report-loading" role="status" aria-live="polite">
+                    <div className="report-loading-mark" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                    <div>
+                      <p className="message-label">COMMON GROUND / REPORT GENERATING</p>
+                      <h3>Building your market-entry readout</h3>
+                      <p>Maya&apos;s conversation, your brief and the market signals are being organised into a structured report.</p>
+                      <div className="report-loading-track" aria-hidden="true"><i /></div>
+                    </div>
                   </div>
                 )}
                 {report && <DemoMarketReport report={report} />}
