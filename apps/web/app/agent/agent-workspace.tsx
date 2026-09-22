@@ -154,114 +154,48 @@ function DemoMarketReport({ report }: { report: MarketEntryReport }) {
 
   return (
     <article className="market-report" aria-label="Demo Australian market-entry report">
-      <section className="report-page report-page--cover">
-        <header className="report-header">
-          <span className="report-brand">
-            COMMON
-            <br />
-            GROUND
-            <br />
-            CREATIVE
-          </span>
-          <span>AUSTRALIAN MARKET ENTRY REPORT</span>
-          <b>DEMO</b>
-        </header>
-        <div className="report-cover-copy">
-          <p>SYDNEY / AUSTRALIA / SEPTEMBER 2026</p>
-          <h3>
-            {report.brandName}
-            <br />
-            <em>{report.reportTitle}</em>
-          </h3>
-          <p className="report-lead">
-            A simple six-part view of the Australian market-entry opportunity.
-          </p>
-        </div>
-        <div className="report-kpis">
-          <div>
-            <span>REPORT FORMAT</span>
-            <b>6 sections</b>
-            <small>simple and decision-ready</small>
+      {sections.map(([number, title, section]) => (
+        <section className="report-page report-section-page" key={title}>
+          <header className="report-header">
+            <span className="report-brand">
+              COMMON
+              <br />
+              GROUND
+              <br />
+              CREATIVE
+            </span>
+            <span>
+              {number} / {title}
+            </span>
+            <b>{number}</b>
+          </header>
+          <div className="report-section-heading report-section-heading--single">
+            <p>
+              {report.brandName} / {report.reportTitle}
+            </p>
+            <h3>{title}</h3>
+            <p>{section.summary}</p>
           </div>
-          <div>
-            <span>OPENING MARKET</span>
-            <b>Australia</b>
-            <small>validate local fit before scale</small>
+          <div className="report-comparison">
+            <span>MARKET COMPARISON / DIRECTIONAL ONLY</span>
+            <div className="report-comparison-row report-comparison-head">
+              <b>BRAND</b>
+              <b>APPROACH</b>
+              <b>IMPLICATION</b>
+            </div>
+            {section.comparisons.map((comparison) => (
+              <div className="report-comparison-row" key={comparison.brand}>
+                <b>{comparison.brand}</b>
+                <p>{comparison.approach}</p>
+                <p>{comparison.implication}</p>
+              </div>
+            ))}
           </div>
-          <div>
-            <span>TEST WINDOW</span>
-            <b>90 days</b>
-            <small>focused learning period</small>
-          </div>
-        </div>
-        <footer>Prepared for demo purposes · Common Ground Creative</footer>
-      </section>
-
-      <section className="report-page">
-        <header className="report-header">
-          <span className="report-brand">
-            COMMON
-            <br />
-            GROUND
-            <br />
-            CREATIVE
-          </span>
-          <span>01 / BUSINESS, MARKET &amp; CUSTOMERS</span>
-          <b>01</b>
-        </header>
-        <div className="report-section-heading">
-          <p>THE ESSENTIALS</p>
-          <h3>
-            Start clear,
-            <br />
-            <em>then test.</em>
-          </h3>
-        </div>
-        <div className="report-insight-grid">
-          {sections.slice(0, 3).map(([number, title, content]) => (
-            <article key={title}>
-              <span>
-                {number} / {title}
-              </span>
-              <p>{content}</p>
-            </article>
-          ))}
-        </div>
-        <footer>Solace Skin demo report · Page 2 of 3</footer>
-      </section>
-
-      <section className="report-page">
-        <header className="report-header">
-          <span className="report-brand">
-            COMMON
-            <br />
-            GROUND
-            <br />
-            CREATIVE
-          </span>
-          <span>02 / STRATEGY, BUDGET &amp; CAMPAIGN</span>
-          <b>02</b>
-        </header>
-        <div className="report-section-heading report-section-heading--compact">
-          <p>THE PLAN</p>
-          <h3>
-            Focus spend,
-            <br />
-            <em>build proof.</em>
-          </h3>
-        </div>
-        <div className="report-insight-grid">
-          {sections.slice(3).map(([number, title, content]) => (
-            <article key={title}>
-              <span>
-                {number} / {title}
-              </span>
-              <p>{content}</p>
-            </article>
-          ))}
-        </div>
-        <footer>Solace Skin demo report · Page 3 of 3</footer>
-      </section>
+          <footer>
+            {report.brandName} · Page {Number(number)} of 6
+          </footer>
+        </section>
+      ))}
     </article>
   );
 }
