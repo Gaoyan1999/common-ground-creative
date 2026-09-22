@@ -1661,13 +1661,6 @@ footer p:last-child {
   font-size: 0.65rem;
   line-height: 1.35;
 }
-.report-page footer {
-  margin-top: auto;
-  padding-top: 1.25rem;
-  color: #806d5a;
-  font: 0.57rem var(--mono);
-  letter-spacing: 0.045em;
-}
 .report-section-heading {
   max-width: 38rem;
   margin: 4.1rem 0 2.1rem;

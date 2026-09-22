@@ -191,9 +191,6 @@ function DemoMarketReport({ report }: { report: MarketEntryReport }) {
               </div>
             ))}
           </div>
-          <footer>
-            {report.brandName} · Page {Number(number)} of 6
-          </footer>
         </section>
       ))}
     </article>
