@@ -15,7 +15,7 @@ type Transcript = {
 };
 
 // Use IPv4 locally so a second dev server bound to IPv6 cannot intercept API calls.
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
 const MAYA_CONTEXT_STORAGE_KEY = 'common-ground:maya-context';
 const MAYA_TRANSCRIPT_STORAGE_KEY = 'common-ground:maya-transcript';
 
