@@ -164,6 +164,17 @@ footer p { margin:0; color:var(--brand-pale); font-size:.7rem; }footer p:last-ch
 
 .assistant-message { max-width:38rem; margin-bottom:2rem; padding:1.25rem 1.4rem; border-left:3px solid var(--brand); background:var(--brand-soft); }
 .assistant-message p:last-child { margin:0; color:var(--text); font-size:.98rem; line-height:1.58; }
+.report-loading { display:grid; grid-template-columns:3rem 1fr; gap:1.1rem; max-width:43rem; margin:1.8rem 0 2rem; padding:1.35rem 1.45rem; border-left:3px solid var(--brand); background:linear-gradient(90deg,var(--brand-soft),rgba(226,96,61,.03)); }
+.report-loading-mark { display:flex; align-items:center; gap:.24rem; height:2.55rem; }
+.report-loading-mark span { width:.28rem; border-radius:99px; background:var(--brand); animation:report-loading-pulse .9s ease-in-out infinite; }
+.report-loading-mark span:nth-child(1) { height:.8rem; animation-delay:-.3s; }.report-loading-mark span:nth-child(2) { height:1.55rem; animation-delay:-.15s; }.report-loading-mark span:nth-child(3) { height:1.05rem; }
+.report-loading .message-label { margin-bottom:.45rem; }
+.report-loading h3 { margin:0 0 .42rem; color:var(--ink); font-size:1.05rem; letter-spacing:-.035em; }
+.report-loading p:last-of-type { max-width:32rem; margin:0; color:var(--text-muted); font-size:.79rem; line-height:1.5; }
+.report-loading-track { height:2px; max-width:20rem; margin-top:1rem; overflow:hidden; background:rgba(226,96,61,.18); }
+.report-loading-track i { display:block; width:35%; height:100%; background:var(--brand); animation:report-loading-progress 1.4s ease-in-out infinite; }
+@keyframes report-loading-pulse { 0%,100% { transform:scaleY(.55); opacity:.45; } 50% { transform:scaleY(1); opacity:1; } }
+@keyframes report-loading-progress { 0% { transform:translateX(-110%); } 100% { transform:translateX(320%); } }
 .brief-card,.summary-card { max-width:43rem; overflow:hidden; border-radius:14px; background:var(--brand-active); color:#fff; box-shadow:0 16px 40px rgba(0,0,0,.35); }
 .brief-card { margin:1.6rem 0 2rem; padding:1.65rem; }
 .brief-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; padding-bottom:1.1rem; border-bottom:1px solid rgba(255,255,255,.2); }
