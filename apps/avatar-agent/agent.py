@@ -16,6 +16,7 @@ INSTRUCTIONS = (
     "build a practical Australian market-entry plan covering business, market, customers, "
     "strategy, budget, and campaign. Never mention implementation details or markdown."
 )
+DEFAULT_MAYA_VOICE_ID = "a0e99841-438c-4a64-b679-ae501e7d6091"
 
 
 def prewarm(proc) -> None:
@@ -31,7 +32,11 @@ async def entrypoint(ctx: JobContext) -> None:
             api_key=os.environ["DASHSCOPE_API_KEY"],
             base_url=os.environ["DASHSCOPE_BASE_URL"].rstrip("/"),
         ),
-        tts=inference.TTS(model="cartesia/sonic-3.6"),
+        tts=inference.TTS(
+            model="cartesia/sonic-3.6",
+            voice=os.environ.get("MAYA_TTS_VOICE_ID") or DEFAULT_MAYA_VOICE_ID,
+            language="en",
+        ),
         vad=ctx.proc.userdata["vad"],
     )
     avatar = synthesia.AvatarSession(
