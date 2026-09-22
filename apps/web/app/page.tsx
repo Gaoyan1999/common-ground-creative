@@ -27,7 +27,6 @@ export default function Home() {
         <div className="arc-nav-links">
           <a href="#how-it-works">How it works</a>
           <a href="#solutions">Solutions</a>
-          <a href="#reports">Reports</a>
           <a href="#about">About</a>
         </div>
         <Link className="arc-nav-cta" href="/agent">Start analysis</Link>
@@ -79,19 +78,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-      <section className="arc-report" id="reports">
-        <p className="arc-kicker">A PLAN BUILT TO MOVE</p>
-        <h2>From local context<br />to clear next moves.</h2>
-        <p>Use an AI-led working session to turn your business context into a focused Australian opportunity, then move forward with a practical plan and specialist support.</p>
-        <Link className="arc-primary-button" href="/agent">Start analysis <span>→</span></Link>
-      </section>
-
-      <footer className="arc-footer">
-        <Image src="/brand/common-ground-creative-logo-orange.png" alt="Common Ground Creative" width={1774} height={887} />
-        <span>Built for brands entering Australia.</span>
-        <span>© 2026</span>
-      </footer>
     </main>
   );
 }
